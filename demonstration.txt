@@ -1,0 +1,10 @@
+This second Proof of Concept should use a basic HTTP server to
+manipulate datas through the data connector system developed in
+the first POC.  The main goals of this POC are:
+1. Move the developed part in the framework sub-directory to
+   add user's own applications
+2. Build a simple HTTP server using the cherrypy library
+3. Define a router, easily configurable, establishing routes between
+   HTTP requests and resources
+4. Create other data connectors (SQL or NoSQL) and, above all,
+   a "postgreSQL" data copnnecotr
