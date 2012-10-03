@@ -87,7 +87,8 @@ class Model(metaclass=MetaModel):
     def get_all(cls):
         """Return the full list of model's objects."""
         if Model.data_connector:
-            return Model.data_connector.get_all_objects(cls)
+            with Model.data_connector.u_lock:
+                return Model.data_connector.get_all_objects(cls)
         
         return []
     
@@ -137,7 +138,11 @@ class Model(metaclass=MetaModel):
                         "specified for the model {}, expects {}".format(
                         model_name, ", ".join(repr_pkey_names)))
         
-        return Model.data_connector.find_object(cls, pkey_values)
+        object = None
+        with Model.data_connector.u_lock:
+            object =Model.data_connector.find_object(cls, pkey_values)
+        
+        return object
     
     def __init__(self, **kwargs):
         """Create an object from keyword parameters.
@@ -164,7 +169,8 @@ class Model(metaclass=MetaModel):
         
         # If named parameters were specified, save the object
         if kwargs and Model.data_connector:
-            Model.data_connector.add_object(self)
+            with Model.data_connector.u_lock:
+                Model.data_connector.add_object(self)
     
     def __repr__(self):
         pkeys = get_pkey_values(self)
@@ -186,7 +192,8 @@ class Model(metaclass=MetaModel):
         object.__setattr__(self, attr, value)
         
         if Model.data_connector and Model.data_connector.running:
-            Model.data_connector.update_object(self, attr)
+            with Model.data_connector.u_lock:
+                Model.data_connector.update_object(self, attr)
     
     def delete(self):
         """Destroy the created object.
@@ -196,4 +203,5 @@ class Model(metaclass=MetaModel):
         
         """
         if Model.data_connector:
-            Model.data_connector.remove_object(self)
+            with Model.data_connector.u_lock:
+                Model.data_connector.remove_object(self)

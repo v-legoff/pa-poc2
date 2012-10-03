@@ -30,6 +30,7 @@
 
 import os
 import yaml
+from threading import RLock
 
 from ext.aboard.model import exceptions as mod_exceptions
 from ext.aboard.model.functions import *
@@ -76,6 +77,9 @@ class DataConnector:
         self.objects_tree = {}
         self.models = {}
         self.deleted_objects = []
+        
+        # Locks for threads
+        self.u_lock = RLock()
     
     def setup(self):
         """Setup the data connector."""
