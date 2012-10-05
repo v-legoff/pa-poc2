@@ -26,9 +26,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Script to launch the Python Aboard server."""
+"""Module defining the Controller class, described below."""
 
-from ext.aboard.server.server import Server
-server = Server("127.0.0.1", 9000)
-server.load_bundles()
-server.run()
+class Controller:
+    
+    """Class describing a controller, wrapper for actions.
+    
+    A controller is a class containing methods that will act as actions.  If a
+    route is connected to an action of a controller (a method of the class),
+    then it will be called when a request is sent to this route.
+    
+    """
+    
+    def __init__(self):
+        """Build the controller."""
+        self.request = None

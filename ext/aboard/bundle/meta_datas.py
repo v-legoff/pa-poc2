@@ -26,9 +26,22 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Script to launch the Python Aboard server."""
+"""Module containing the MetaDatas class, descripbed below."""
 
-from ext.aboard.server.server import Server
-server = Server("127.0.0.1", 9000)
-server.load_bundles()
-server.run()
+class MetaDatas:
+    
+    """Class representing the bundle meta-datas.
+    
+    Meta-datas are datas stored in the bundle giving some general
+    informations about the bundle (who wrote it, what is its purposes,
+    what are its eventual requirements...).
+    
+    """
+    
+    def __init__(self, buundle_name, informations):
+        """Construct the meta-datas.
+        
+        The informations are given as a dictionary {information_name: values}.
+        
+        """
+        self.requirements = []

@@ -118,5 +118,5 @@ class Route:
                     re_pattern[pos + len(r_name) + 1:]
         
         re_pattern = "^" + re_pattern + "$"
-        print("Pattern from", pattern, "gave", repattern)
-        return re_pattern
+        print("Pattern from", pattern, "gave", re_pattern)
+        return re.compile(re_pattern)

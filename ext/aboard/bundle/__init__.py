@@ -26,9 +26,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Script to launch the Python Aboard server."""
+"""This package contains the bundle mechanism.
 
-from ext.aboard.server.server import Server
-server = Server("127.0.0.1", 9000)
-server.load_bundles()
-server.run()
+a bundle is a part of an application, deined by the user.  It contains some
+controllers, models, configuration like routing informations, pages as
+templates and so forth.
+
+The main class of this mechanism, Bundle, is described in the ./bundle.py
+file.
+
+"""
+
+from ext.aboard.bundle.bundle import Bundle

@@ -28,8 +28,11 @@
 
 """Module containg the Python Aboard server, build on CherryPy."""
 
+import os
+
 import cherrypy
 
+from ext.aboard.bundle import Bundle
 from ext.aboard.router.dispatcher import AboardDispatcher
 
 class Server:
@@ -39,12 +42,24 @@ class Server:
     def __init__(self, host, port):
         self.host = host
         self.port = port
+        self.dispatcher = AboardDispatcher()
+        self.bundles = {}
+    
+    def load_bundles(self):
+        """Load the user's bundles."""
+        path = "bundles"
+        for name in os.listdir(path):
+            if not name.startswith("__") and os.path.isdir(path + "/" + name):
+                bundle = Bundle(name)
+                self.bundles[name] = bundle
+        
+        for bundle in self.bundles.values():
+            bundle.setup(self)
     
     def run(self):
         """Run the server."""
-        dispatcher = AboardDispatcher()
         cherrypy.config.update({'server.socket_port': 9000})
-        conf = {'/': {'request.dispatch': dispatcher}}
+        conf = {'/': {'request.dispatch': self.dispatcher}}
         cherrypy.tree.mount(root=None, config=conf)
         cherrypy.engine.start()
         cherrypy.engine.block()

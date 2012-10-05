@@ -26,9 +26,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Script to launch the Python Aboard server."""
+"""This package contains the Controller structure.
 
-from ext.aboard.server.server import Server
-server = Server("127.0.0.1", 9000)
-server.load_bundles()
-server.run()
+The main class, the Controller class, is defined in the ./controller.py file.
+
+"""
+
+from ext.aboard.controller.controller import Controller

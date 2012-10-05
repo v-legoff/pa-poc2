@@ -82,9 +82,9 @@ class AboardDispatcher(Dispatcher):
             print("match?", route, path, end=" ")
             if route.match(path):
                 print("yes")
+                return route.callable, route.expected_arguments
             else:
                 print("no")
-                return route.callable, route.expected_arguments
         print("not found")
         return None, []
     
@@ -92,3 +92,4 @@ class AboardDispatcher(Dispatcher):
         """Add a route."""
         route = Route(pattern, controller)
         self.routes.append(route)
+        return route
