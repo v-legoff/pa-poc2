@@ -31,7 +31,7 @@
 import cherrypy
 Dispatcher = cherrypy.dispatch.Dispatcher
 
-from ext.aboard.router.route import Route
+from ext.aboard.router.route import Route, ALL_METHODS
 
 class AboardDispatcher:
     
@@ -83,8 +83,8 @@ class AboardDispatcher:
         }
         request.is_index = True
         for route in self.routes:
-            print("match?", route, path, end=" ")
-            if route.match(path):
+            print("match?", request.method, route, path, end=" ")
+            if route.match(request, path):
                 print("yes")
                 route.controller.request = request
                 return route.callable, route.expected_arguments
@@ -93,8 +93,8 @@ class AboardDispatcher:
         print("not found")
         return None, []
     
-    def add_route(self, pattern, controller, callable):
+    def add_route(self, pattern, controller, callable, methods=ALL_METHODS):
         """Add a route."""
-        route = Route(pattern, controller, callable)
+        route = Route(pattern, controller, callable, methods)
         self.routes.append(route)
         return route

@@ -7,5 +7,6 @@ user_view:
   controller: main.Users.view
 
 user_create:
-  pattern: /user-create/
+  pattern: /users/
   controller: main.Users.create
+  method: POST

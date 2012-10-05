@@ -9,7 +9,7 @@ class Users(Controller):
     
     @Controller.model_id("main.User")
     def view(self, *args, **kwargs):
-        print("view", *args, **kwargs)
+        print("view", args, kwargs)
         return "ok"
     
     def create(self):

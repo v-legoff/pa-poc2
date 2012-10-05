@@ -34,6 +34,7 @@ from ext.aboard.router.patterns import TYPES
 
 # Constants
 RE_NAME = re.compile("^([A-Za-z]+)")
+ALL_METHODS = ("GET", "POST", "PUT", "DELETE")
 
 class Route:
     
@@ -63,7 +64,7 @@ class Route:
     
     """
     
-    def __init__(self, pattern, controller, callable):
+    def __init__(self, pattern, controller, callable, methods=ALL_METHODS):
         """Create a new route.
         
         Expected parameters:
@@ -81,12 +82,19 @@ class Route:
         self.controller = controller
         self.callable = callable
         self.expected_arguments = []
+        if isinstance(methods, str):
+            methods = [methods]
+        self.methods = tuple(meth_name.upper() for meth_name in methods)
     
     def __repr__(self):
-        return "<Route to {} -> {}>".format(self.pattern, self.callable)
+        return "<Route to {} -> {} (methods={})>".format(
+                self.pattern, self.callable, ",".join(self.methods))
     
-    def match(self, path):
+    def match(self, request, path):
         """Return whether or not thie path is matched by the route."""
+        if request.method.upper() not in self.methods:
+            return False
+        
         match = self.re_pattern.search(path)
         if match:
             self.expected_arguments = list(match.groups())
