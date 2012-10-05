@@ -10,3 +10,8 @@ user_create:
   pattern: /users/
   controller: main.Users.create
   method: POST
+
+user_update:
+  pattern: /users/:id
+  controller: main.Users.update
+  method: PUT

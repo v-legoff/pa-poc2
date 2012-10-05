@@ -16,3 +16,11 @@ class Users(Controller):
         """Create a user."""
         user = User(username="Donald")
         return str(user)
+    
+    @Controller.model_id("main.User")
+    def update(self, user, username=None, password=None):
+        if username:
+            user.username = username
+        if password:
+            user.password = password
+        return str(user)
