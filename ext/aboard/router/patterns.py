@@ -26,16 +26,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Script to launch the Python Aboard server."""
+"""This module contains the different pattern types."""
 
-from ext.aboard.server.server import Server
-from ext.aboard.model import Model
-
-server = Server("127.0.0.1", 9000)
-server.load_configurations()
-server.prepare()
-server.load_bundles()
-models = server.models
-Model.data_connector.record_models(models)
-server.run()
-Model.data_connector.loop()
+TYPES = {
+    "id": r"\d+",
+}

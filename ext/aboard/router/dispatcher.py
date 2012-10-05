@@ -33,7 +33,7 @@ Dispatcher = cherrypy.dispatch.Dispatcher
 
 from ext.aboard.router.route import Route
 
-class AboardDispatcher(Dispatcher):
+class AboardDispatcher:
     
     """Cherrypy dispatcher for Python Aboard.
     
@@ -70,26 +70,31 @@ class AboardDispatcher(Dispatcher):
     
     def __call__(self, path):
         """Look for a matching route to 'path'."""
-        print("call", path)
+        if path.endswith("/"):
+            path = path[:-1]
+        
         return Dispatcher.__call__(self, path)
     
     def find_handler(self, path):
         """Return the appropriate page handler, plus any virtual path."""
         request = cherrypy.serving.request
-        request.config = {"tools.encode.on": True}
+        request.config = {
+                "tools.encode.on": True,
+        }
         request.is_index = True
         for route in self.routes:
             print("match?", route, path, end=" ")
             if route.match(path):
                 print("yes")
+                route.controller.request = request
                 return route.callable, route.expected_arguments
             else:
                 print("no")
         print("not found")
         return None, []
     
-    def add_route(self, pattern, controller):
+    def add_route(self, pattern, controller, callable):
         """Add a route."""
-        route = Route(pattern, controller)
+        route = Route(pattern, controller, callable)
         self.routes.append(route)
         return route

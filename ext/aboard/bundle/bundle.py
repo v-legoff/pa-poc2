@@ -93,8 +93,8 @@ class Bundle:
                         self.name, requirement))
                 return False
         
-        self.load_controllers()
-        self.load_models()
+        self.load_controllers(server)
+        self.load_models(server)
         self.load_views()
         self.config = Config(self.name)
         cfg_setup = self.config.setup(server)
@@ -119,7 +119,7 @@ class Bundle:
         
         return MetaDatas(self.name, meta_dict)
     
-    def load_controllers(self):
+    def load_controllers(self, server):
         """Load the bundle controllers."""
         path = "bundles/" + self.name + "/controllers"
         py_path = "bundles." + self.name + ".controllers"
@@ -130,9 +130,9 @@ class Bundle:
                     file_path = path + "/" + file_name
                     py_file_path = py_path + "." + file_name[:-3]
                     self.load_controller(file_name[:-3], file_name,
-                            py_file_path)
+                            py_file_path, server)
     
-    def load_controller(self, py_name, path, py_path):
+    def load_controller(self, py_name, path, py_path, server):
         """Load a controller."""
         controller_name = py_name.capitalize()
         load = __import__(py_path)
@@ -140,11 +140,32 @@ class Bundle:
             load = getattr(load, node)
         
         controller = getattr(load, controller_name)
-        self.controllers[controller_name] = controller()
+        controller = controller()
+        controller.server = server
+        self.controllers[controller_name] = controller
     
-    def load_models(self):
+    def load_models(self, server):
         """Load the bundle models."""
-        return
+        path = "bundles/" + self.name + "/models"
+        py_path = "bundles." + self.name + ".models"
+        if os.path.exists(path):
+            for file_name in os.listdir(path):
+                if not file_name.startswith("__") and \
+                        file_name.endswith(".py") and len(file_name) > 3:
+                    file_path = path + "/" + file_name
+                    py_file_path = py_path + "." + file_name[:-3]
+                    self.load_model(file_name[:-3], file_name,
+                            py_file_path, server)
+    
+    def load_model(self, py_name, path, py_path, server):
+        """Load a model."""
+        model_name = py_name.capitalize()
+        load = __import__(py_path)
+        for node in py_path.split(".")[1:]:
+            load = getattr(load, node)
+        
+        model = getattr(load, model_name)
+        self.models[model_name] = model
     
     def load_views(self):
         """Load the bundle views."""

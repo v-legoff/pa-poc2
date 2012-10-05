@@ -76,4 +76,4 @@ class Config:
             bundle = server.bundles[bundle_name]
             controller = bundle.controllers[controller_name]
             action = getattr(controller, action_name)
-            server.dispatcher.add_route(pattern, action)
+            server.dispatcher.add_route(pattern, controller, action)

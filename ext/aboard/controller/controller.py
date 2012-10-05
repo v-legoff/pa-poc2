@@ -28,6 +28,8 @@
 
 """Module defining the Controller class, described below."""
 
+from ext.aboard.model.exceptions import ObjectNotFound
+
 class Controller:
     
     """Class describing a controller, wrapper for actions.
@@ -41,3 +43,42 @@ class Controller:
     def __init__(self):
         """Build the controller."""
         self.request = None
+    
+    @staticmethod
+    def model_id(*names_of_model):
+        """Decorator which takes string and convert to object.
+        
+        The number of arguments should match the number of positional
+        arguments expected by the callable (the method controller).
+        
+        If, for instance, the controler method is like that:
+        >>> def view(self, user):
+        then the line just above should be something like:
+        >>> @Controller.model_id("User")
+        
+        """
+        def decorator(function):
+            """Main wrapper."""
+            def callable_wrapper(controller, *args, **kwargs):
+                """Crapper of the controller."""
+                # Convert the list of arguments
+                c_args = []
+                for i, arg in enumerate(args):
+                    model_name = names_of_model[i]
+                    if model_name:
+                        arg = int(arg)
+                        
+                        # Get the model
+                        model = controller.server.get_model(model_name)
+                        try:
+                            object = model.find(arg)
+                        except ObjectNotFound as err:
+                            return str(err)
+                        
+                        c_args.append(object)
+                    else:
+                        c_args.append(arg)
+                    
+                return function(controller, *c_args, **kwargs)
+            return callable_wrapper
+        return decorator

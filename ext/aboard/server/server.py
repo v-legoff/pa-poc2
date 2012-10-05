@@ -31,8 +31,11 @@
 import os
 
 import cherrypy
+import yaml
 
 from ext.aboard.bundle import Bundle
+from ext.aboard.dc import connectors
+from ext.aboard.model import Model
 from ext.aboard.router.dispatcher import AboardDispatcher
 
 class Server:
@@ -44,6 +47,42 @@ class Server:
         self.port = port
         self.dispatcher = AboardDispatcher()
         self.bundles = {}
+        self.configurations = {}
+    @property
+    def models(self):
+        """Return all the models."""
+        models = []
+        for bundle in self.bundles.values():
+            models.extend(list(bundle.models.values()))
+        
+        return models
+    
+    
+    def load_configurations(self):
+        """This method reads the configuration files found in /config."""
+        path = "config"
+        for file_name in os.listdir(path):
+            if file_name.endswith(".yml"):
+                with open(path + "/" + file_name, "r") as file:
+                    configuration = yaml.load(file)
+                    self.configurations[file_name[:-4]] = configuration
+    
+    def prepare(self):
+        """Prepare the server."""
+        dc_conf = self.configurations["data_connector"]
+        dc_name = dc_conf["dc_name"]
+        dc_spec = dict(dc_conf)
+        del dc_spec["dc_name"]
+        try:
+            dc = connectors[dc_name]
+        except KeyError:
+            print("Unknown data connector {}".format(dc_name))
+            return
+        
+        dc = dc()
+        dc.setup(**dc_spec)
+        Model.data_connector = dc
+        print("Set data connector to", dc_name)
     
     def load_bundles(self):
         """Load the user's bundles."""
@@ -63,3 +102,10 @@ class Server:
         cherrypy.tree.mount(root=None, config=conf)
         cherrypy.engine.start()
         cherrypy.engine.block()
+    
+    def get_model(self, name):
+        """Try and retrieve a Model class."""
+        bundle_name, model_name = name.split(".")
+        bundle = self.bundles[bundle_name]
+        model = bundle.models[model_name]
+        return model

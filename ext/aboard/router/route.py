@@ -30,8 +30,10 @@
 
 import re
 
+from ext.aboard.router.patterns import TYPES
+
 # Constants
-RE_NAME = re.compile("^([A-Za-z]*?)")
+RE_NAME = re.compile("^([A-Za-z]+)")
 
 class Route:
     
@@ -61,7 +63,7 @@ class Route:
     
     """
     
-    def __init__(self, pattern, callable):
+    def __init__(self, pattern, controller, callable):
         """Create a new route.
         
         Expected parameters:
@@ -71,8 +73,12 @@ class Route:
         [1] The pattern is not a regular expression but...
         
         """
+        if pattern.endswith("/"):
+            pattern = pattern[:-1]
+        
         self.pattern = pattern
         self.re_pattern = self.convert_pattern_to_re(pattern)
+        self.controller = controller
         self.callable = callable
         self.expected_arguments = []
     
@@ -96,10 +102,10 @@ class Route:
         
         """
         re_pattern = pattern
-        pos = pattern.find(":")
+        pos = re_pattern.find(":")
         while pos >= 0:
             # Get the string from pos to the end
-            sub = pattern[pos:]
+            sub = pattern[pos + 1:]
             # Get the string to convert
             r_name = RE_NAME.search(sub)
             if not r_name:
@@ -107,15 +113,18 @@ class Route:
                         "with a ':' whereas an expression name is " \
                         "expected".format(pattern))
             
+            r_name = r_name.groups()[0]
+            
             # Try to find the specified type
-            type = TYPE_EXPRESSIONS.get(r_name)
+            type = TYPES.get(r_name)
             if type is None:
+                print(repr(r_name))
                 raise TypeExpressionNotFound("the {} expression " \
                         "was not found".format(repr(r_name)))
             
-            re_sub = type.regular_expression
-            re_pattern = re_pattern[:pos] + re_sub + \
+            re_pattern = re_pattern[:pos] + "(" + type + ")" + \
                     re_pattern[pos + len(r_name) + 1:]
+            pos = re_pattern.find(":")
         
         re_pattern = "^" + re_pattern + "$"
         print("Pattern from", pattern, "gave", re_pattern)

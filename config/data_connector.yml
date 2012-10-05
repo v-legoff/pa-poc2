@@ -1,0 +1,5 @@
+# Data connector name
+dc_name: yaml
+
+# Database location, a directory
+location: ~/aboard/yaml

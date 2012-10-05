@@ -1,3 +1,11 @@
 users:
   pattern: /users/
   controller: main.Users.list
+
+user_view:
+  pattern: /users/:id
+  controller: main.Users.view
+
+user_create:
+  pattern: /user-create/
+  controller: main.Users.create
