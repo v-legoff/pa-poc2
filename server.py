@@ -28,6 +28,10 @@
 
 """Script to launch the Python Aboard server."""
 
+import sys
+
+sys.path.append("..")
+
 from ext.aboard.server.server import Server
 from ext.aboard.model import Model
 

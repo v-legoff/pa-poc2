@@ -28,6 +28,75 @@
 
 """This module contains the different pattern types."""
 
-TYPES = {
-    "id": r"\d+",
-}
+types = {}
+
+class PatternMetaclass(type):
+    
+    """Metaclass to insert the inherited class in the TYPES dictionary."""
+    
+    def __init__(cls, name, parents, attributes):
+        type.__init__(cls, name, parents, attributes)
+        if cls.name:
+            types[cls.name] = cls
+
+class PatternType(metaclass=PatternMetaclass):
+    
+    """Abstract class which represents a pattern type.
+    
+    The 'pattern' used in this context is a part of a route.  This pattern
+    isused to represent dynamic part in a route.  For instance, in the route
+    'images/:id', the ':id' part is dynamic and the 'id' part is the
+    'pattern type id'.
+    
+    In a route description, the patterns are specified after a colons (':').
+    
+    To add a new pattern type, simply inherit from this class and specify
+    the value of the 'name' class attribute.  For instance:
+    >>> class ID(PatternType):
+    ...     name = "id"
+    That's it:  if the Python file containing this code is imported (of
+    course), the pattern will be automaticcaly added to the usable pattern
+    types.  You should be able to use it in a route description.
+    
+    A pattern type needs some informations:
+    
+    Class attributes:
+        regex -- the regular expression as a str [1]
+    
+    Instance methods:
+        convert -- convert the dynamic part (still str)
+    
+    """
+    
+    name = None #  Specify it in a subclass
+    regex = None #  Specify it in a subclass
+    
+    def convert(self, expression):
+        """Return the converted expression if possible.
+        
+        If not, raise a PatternError exception.
+        
+        """
+        raise NotImplementedError
+
+
+class ID(PatternType):
+    
+    """Patter type: id.
+    
+    This pattern type expects an ID, an integer > 0.
+    
+    """
+    
+    name = "id"
+    regex = r"(\d+)"
+    
+    def convert(self, expression):
+        """Return the converted expression if possible.
+        
+        If not, raise a PatternError exception.
+        
+        """
+        # We know that the regex has been matched, so you can relax
+        expression = int(expression)
+        return expression

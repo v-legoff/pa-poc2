@@ -46,7 +46,7 @@ class Controller:
     
     @staticmethod
     def model_id(*names_of_model):
-        """Decorator which takes string and convert to object.
+        """Decorator which takes integers and convert to object.
         
         The number of arguments should match the number of positional
         arguments expected by the callable (the method controller).
@@ -66,10 +66,9 @@ class Controller:
                 for i, arg in enumerate(args):
                     model_name = names_of_model[i]
                     if model_name:
-                        arg = int(arg)
-                        
                         # Get the model
                         model = controller.server.get_model(model_name)
+                        arg = int(arg)
                         try:
                             object = model.find(arg)
                         except ObjectNotFound as err:

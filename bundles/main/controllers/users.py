@@ -8,9 +8,8 @@ class Users(Controller):
         return str(User.get_all())
     
     @Controller.model_id("main.User")
-    def view(self, *args, **kwargs):
-        print("view", args, kwargs)
-        return "ok"
+    def view(self, user):
+        return str(user)
     
     def create(self):
         """Create a user."""

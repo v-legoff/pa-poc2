@@ -30,7 +30,7 @@
 
 import re
 
-from ext.aboard.router.patterns import TYPES
+from ext.aboard.router.patterns import types
 
 # Constants
 RE_NAME = re.compile("^([A-Za-z]+)")
@@ -78,13 +78,14 @@ class Route:
             pattern = pattern[:-1]
         
         self.pattern = pattern
-        self.re_pattern = self.convert_pattern_to_re(pattern)
         self.controller = controller
         self.callable = callable
         self.expected_arguments = []
         if isinstance(methods, str):
             methods = [methods]
         self.methods = tuple(meth_name.upper() for meth_name in methods)
+        self.patterns = []
+        self.re_pattern = self.convert_pattern_to_re(pattern)
     
     def __repr__(self):
         return "<Route to {} -> {} (methods={})>".format(
@@ -97,12 +98,15 @@ class Route:
         
         match = self.re_pattern.search(path)
         if match:
-            self.expected_arguments = list(match.groups())
+            groups = list(match.groups())
+            self.expected_arguments = []
+            for i, pattern in enumerate(self.patterns):
+                value = pattern.convert(groups[i])
+                self.expected_arguments.append(groups[i])
         
         return match is not None
     
-    @classmethod
-    def convert_pattern_to_re(cls, pattern):
+    def convert_pattern_to_re(self, pattern):
         """Return the regular expression corresponding to the specified pattern.
         
         If errors are found, this method will raise specific
@@ -124,16 +128,17 @@ class Route:
             r_name = r_name.groups()[0]
             
             # Try to find the specified type
-            type = TYPES.get(r_name)
+            type = types.get(r_name)
             if type is None:
                 print(repr(r_name))
                 raise TypeExpressionNotFound("the {} expression " \
                         "was not found".format(repr(r_name)))
             
-            re_pattern = re_pattern[:pos] + "(" + type + ")" + \
+            type = type()
+            re_pattern = re_pattern[:pos] + "(" + type.regex + ")" + \
                     re_pattern[pos + len(r_name) + 1:]
             pos = re_pattern.find(":")
+            self.patterns.append(type)
         
         re_pattern = "^" + re_pattern + "$"
-        print("Pattern from", pattern, "gave", re_pattern)
         return re.compile(re_pattern)
