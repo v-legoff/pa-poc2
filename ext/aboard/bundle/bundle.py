@@ -95,7 +95,6 @@ class Bundle:
         
         self.load_controllers(server)
         self.load_models(server)
-        self.load_views()
         self.config = Config(self.name)
         cfg_setup = self.config.setup(server)
         if not cfg_setup:
@@ -166,7 +165,3 @@ class Bundle:
         
         model = getattr(load, model_name)
         self.models[model_name] = model
-    
-    def load_views(self):
-        """Load the bundle views."""
-        return

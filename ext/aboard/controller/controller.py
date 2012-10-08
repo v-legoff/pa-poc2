@@ -90,6 +90,10 @@ class Controller:
         if not format:
             format = self.server.default_format
         
+        if format == "jj2":
+            template = self.server.templating_system.get_template(view)
+            return template.render(**representations)
+        
         if format not in self.server.allowed_formats:
             return "Unknown format {}.".format(format)
         

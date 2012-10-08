@@ -38,6 +38,7 @@ from ext.aboard.dc import connectors
 from ext.aboard.formatters import formats
 from ext.aboard.model import Model
 from ext.aboard.router.dispatcher import AboardDispatcher
+from ext.aboard.templating import templating_systems
 
 class Server:
     
@@ -49,6 +50,8 @@ class Server:
         self.dispatcher = AboardDispatcher()
         self.bundles = {}
         self.configurations = {}
+        self.templating_system = templating_systems["jinja2"](self)
+        self.templating_system.setup()
     
     @property
     def models(self):
