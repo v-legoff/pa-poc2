@@ -55,12 +55,16 @@ class PAFileSystemLoader(BaseLoader):
         or not.
         
         """
-        path = template.split(".")
-        # The first part of the path must be a bundle name
-        # The other parts are the hierarchy of directory after 'views'
-        bundle = path[0]
-        sub_hierarchy = "/".join(path[1:])
-        path = "bundles/" + bundle + "/views/" + sub_hierarchy + ".jj2"
+        if "/" not in template:
+            path = template.split(".")
+            # The first part of the path must be a bundle name
+            # The other parts are the hierarchy of directory after 'views'
+            bundle = path[0]
+            sub_hierarchy = "/".join(path[1:])
+            path = "bundles/" + bundle + "/views/" + sub_hierarchy + ".jj2"
+        else:
+            path = template
+        
         print(path)
         if not exists(path):
             raise TemplateNotFound(template)

@@ -1,1 +1,5 @@
-<h1>User: {{ user.username}}</h1>
+{% extends "layout/base.jj2" %}
+{% block title %}Show user {{ user.id }}{% endblock %}
+    {% block content %}
+        <h1>User: {{ user.username}}</h1>
+    {% endblock %}
