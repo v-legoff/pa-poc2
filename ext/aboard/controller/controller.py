@@ -28,6 +28,7 @@
 
 """Module defining the Controller class, described below."""
 
+from ext.aboard.formatters import formats
 from ext.aboard.model.exceptions import ObjectNotFound
 
 class Controller:
@@ -40,8 +41,9 @@ class Controller:
     
     """
     
-    def __init__(self):
+    def __init__(self, server):
         """Build the controller."""
+        self.server = server
         self.request = None
     
     @staticmethod
@@ -81,3 +83,14 @@ class Controller:
                 return function(controller, *c_args, **kwargs)
             return callable_wrapper
         return decorator
+    
+    def render(self, view, **representations):
+        """Render datas using the formatters."""
+        format = self.request.format
+        if not format:
+            format = self.server.default_format
+        
+        if format not in self.server.allowed_formats:
+            return "Unknown format {}.".format(format)
+        
+        return formats[format].convert(**representations)

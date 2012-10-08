@@ -4,17 +4,16 @@ from bundles.main.models.user import User
 class Users(Controller):
     
     def list(self):
-        print(self.request)
-        return str(User.get_all())
+        return self.render("main.user.list", users=User.get_all())
     
     @Controller.model_id("main.User")
     def view(self, user):
-        return str(user)
+        return self.render("main.user.view", user=user)
     
     def create(self):
         """Create a user."""
         user = User(username="Donald")
-        return str(user)
+        return self.render("main.user.view", user=user)
     
     @Controller.model_id("main.User")
     def update(self, user, username=None, password=None):

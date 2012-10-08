@@ -73,6 +73,14 @@ class AboardDispatcher:
         if path.endswith("/"):
             path = path[:-1]
         
+        # Get the format
+        format = path.split(".")[-1].lower()
+        if len(format) < len(path):
+            path = path[:-(len(format) + 1)]
+        else:
+            format = ""
+        
+        cherrypy.serving.request.format = format
         return Dispatcher.__call__(self, path)
     
     def find_handler(self, path):

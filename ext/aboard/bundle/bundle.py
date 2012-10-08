@@ -140,7 +140,7 @@ class Bundle:
             load = getattr(load, node)
         
         controller = getattr(load, controller_name)
-        controller = controller()
+        controller = controller(server)
         controller.server = server
         self.controllers[controller_name] = controller
     

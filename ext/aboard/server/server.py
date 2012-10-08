@@ -35,6 +35,7 @@ import yaml
 
 from ext.aboard.bundle import Bundle
 from ext.aboard.dc import connectors
+from ext.aboard.formatters import formats
 from ext.aboard.model import Model
 from ext.aboard.router.dispatcher import AboardDispatcher
 
@@ -48,6 +49,7 @@ class Server:
         self.dispatcher = AboardDispatcher()
         self.bundles = {}
         self.configurations = {}
+    
     @property
     def models(self):
         """Return all the models."""
@@ -83,6 +85,26 @@ class Server:
         dc.setup(**dc_spec)
         Model.data_connector = dc
         print("Set data connector to", dc_name)
+        
+        if "formats" not in self.configurations:
+            return
+        cfg_formats = self.configurations["formats"]
+        
+        # Setup the default_format
+        default = cfg_formats["default_format"].lower()
+        if default not in formats:
+            raise ValueError("unknown format {}".format(default))
+        
+        allowed_formats = []
+        for format in cfg_formats.get("allowed_formats", []):
+            format = format.lower()
+            if format not in formats:
+                raise ValueError("unknown format {}".format(format))
+            
+            allowed_formats.append(format)
+        
+        self.default_format = default
+        self.allowed_formats = allowed_formats
     
     def load_bundles(self):
         """Load the user's bundles."""

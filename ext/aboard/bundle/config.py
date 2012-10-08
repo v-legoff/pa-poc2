@@ -71,7 +71,6 @@ class Config:
             
             # Try to find the controller
             location = informations["controller"]
-            print(location)
             bundle_name, controller_name, action_name = location.split(".")
             bundle = server.bundles[bundle_name]
             controller = bundle.controllers[controller_name]
