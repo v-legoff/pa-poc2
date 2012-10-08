@@ -8,11 +8,13 @@ class Users(Controller):
     
     @Controller.model_id("main.User")
     def view(self, user):
+        user = user.display_representation(["id", "username"])
         return self.render("main.user.view", user=user)
     
     def create(self):
         """Create a user."""
         user = User(username="Donald")
+        user = user.display_representation(["id", "username"])
         return self.render("main.user.view", user=user)
     
     @Controller.model_id("main.User")

@@ -205,3 +205,21 @@ class Model(metaclass=MetaModel):
         if Model.data_connector:
             with Model.data_connector.u_lock:
                 Model.data_connector.remove_object(self)
+    
+    # Methods to represent objects
+    def display_representation(self, filters=None):
+        """Return a dict containing the filtered self.__dict__."""
+        attrs = OrderedDict()
+        for field in get_fields(type(self)):
+            name = field.field_name
+            value = getattr(self, name)
+            attrs[name] = value
+        
+        if filters is None:
+            return dict(attrs)
+        elif isinstance(filters, list):
+            filter_attrs = OrderedDict()
+            for attr in filters:
+                if attr in attrs:
+                    filter_attrs[attr] = attrs[attr]
+            return dict(filter_attrs)
