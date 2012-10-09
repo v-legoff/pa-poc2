@@ -3,4 +3,6 @@
     {% block content %}
         <h1>User: {{ user.username}}</h1>
         <p>My password, by the way, is somethin' like {{ user.password }} but <strong>DO NOT USE IT</strong> 'kay?</p>
+        <p>{{ link_to("user_edit", user.id, name="Edit this user") }}</p>
+        <p>Go back to {{ link_to("users", name="the list of users") }}</p>
     {% endblock %}

@@ -1,3 +1,5 @@
+import cherrypy
+
 from ext.aboard.controller import Controller
 from bundles.main.models.user import User
 
@@ -28,6 +30,11 @@ class Users(Controller):
         return self.render("main.user.view", user=user)
     
     @Controller.model_id("main.User")
+    def edit(self, user):
+        user = user.display_representation(["id", "username"])
+        return self.render("main.user.update", user=user)
+    
+    @Controller.model_id("main.User")
     def update(self, user, username=None, password=None):
         if username:
             user.username = username
@@ -40,4 +47,4 @@ class Users(Controller):
     @Controller.model_id("main.User")
     def delete(self, user):
         user.delete()
-        return str("")
+        raise cherrypy.HTTPRedirect("/users")
