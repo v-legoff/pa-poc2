@@ -30,6 +30,7 @@
 
 from jinja2 import Environment
 
+from ext.aboard.templating.jinja2.functions import TemplateFunctions
 from ext.aboard.templating.jinja2.loader import PAFileSystemLoader
 
 class Jinja2:
@@ -43,6 +44,8 @@ class Jinja2:
     def setup(self):
         """Setup the templating system (create the environment here)."""
         self.environment = Environment(loader=PAFileSystemLoader())
+        self.functions = TemplateFunctions(self.server,
+                self.environment.globals)
     
     def get_template(self, template):
         """Get and return the template."""

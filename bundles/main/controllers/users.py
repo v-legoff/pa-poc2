@@ -9,13 +9,22 @@ class Users(Controller):
     
     @Controller.model_id("main.User")
     def view(self, user):
-        user = user.display_representation(["id", "username"])
+        user = user.display_representation(["id", "username", "password"])
         return self.render("main.user.view", user=user)
     
-    def create(self):
+    def new(self):
+        return self.render("main.user.new")
+    
+    def create(self, username=None, password=None):
         """Create a user."""
-        user = User(username="Donald")
-        user = user.display_representation(["id", "username"])
+        infos = {}
+        if username:
+            infos["username"] = username
+        if password:
+            infos["password"] = password
+        user = User(**infos)
+        user = user.display_representation(["id", "username",
+                "password"])
         return self.render("main.user.view", user=user)
     
     @Controller.model_id("main.User")
@@ -24,4 +33,11 @@ class Users(Controller):
             user.username = username
         if password:
             user.password = password
-        return str(user)
+        user = user.display_representation(["id", "username",
+                "password"])
+        return self.render("main.user.view", user=user)
+    
+    @Controller.model_id("main.User")
+    def delete(self, user):
+        user.delete()
+        return str("")

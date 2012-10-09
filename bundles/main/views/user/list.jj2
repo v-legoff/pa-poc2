@@ -18,4 +18,5 @@
         {% else %}
         <p>No user defined yet.</p>
         {% endif %}
+        {{ link_to("user_new", name="Create a new user") }}
     {% endblock %}

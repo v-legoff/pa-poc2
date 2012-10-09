@@ -66,7 +66,7 @@ class AboardDispatcher:
         
         """
         Dispatcher.__init__(self, translate={})
-        self.routes = []
+        self.routes = {}
     
     def __call__(self, path):
         """Look for a matching route to 'path'."""
@@ -90,7 +90,7 @@ class AboardDispatcher:
                 "tools.encode.on": True,
         }
         request.is_index = True
-        for route in self.routes:
+        for route in self.routes.values():
             print("match?", request.method, route, path, end=" ")
             if route.match(request, path):
                 print("yes")
@@ -98,11 +98,11 @@ class AboardDispatcher:
                 return route.callable, route.expected_arguments
             else:
                 print("no")
-        print("not found")
         return None, []
     
-    def add_route(self, pattern, controller, callable, methods=ALL_METHODS):
+    def add_route(self, name, pattern, controller, callable,
+            methods=ALL_METHODS):
         """Add a route."""
         route = Route(pattern, controller, callable, methods)
-        self.routes.append(route)
+        self.routes[name] = route
         return route

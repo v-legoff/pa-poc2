@@ -2,4 +2,5 @@
 {% block title %}Show user {{ user.id }}{% endblock %}
     {% block content %}
         <h1>User: {{ user.username}}</h1>
+        <p>My password, by the way, is somethin' like {{ user.password }} but <strong>DO NOT USE IT</strong> 'kay?</p>
     {% endblock %}

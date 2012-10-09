@@ -1,0 +1,8 @@
+{% extends "layout/base.jj2" %}
+{% block title %}Create a new user{% endblock %}
+{% block content %}
+{% set method = "POST" %}
+{% set action = "/users/create" %}
+{% set submit = "Create user" %}
+{% include "main.user.edit" with context %}
+{% endblock %}

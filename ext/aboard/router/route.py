@@ -85,6 +85,7 @@ class Route:
             methods = [methods]
         self.methods = tuple(meth_name.upper() for meth_name in methods)
         self.patterns = []
+        self.py_pattern = ""
         self.re_pattern = self.convert_pattern_to_re(pattern)
     
     def __repr__(self):
@@ -106,6 +107,10 @@ class Route:
         
         return match is not None
     
+    def get_path(self, *arguments):
+        """Return the route with its arguments."""
+        return self.py_pattern.format(*arguments)
+    
     def convert_pattern_to_re(self, pattern):
         """Return the regular expression corresponding to the specified pattern.
         
@@ -114,6 +119,7 @@ class Route:
         
         """
         re_pattern = pattern
+        py_pattern = pattern
         pos = re_pattern.find(":")
         while pos >= 0:
             # Get the string from pos to the end
@@ -130,15 +136,19 @@ class Route:
             # Try to find the specified type
             type = types.get(r_name)
             if type is None:
-                print(repr(r_name))
                 raise TypeExpressionNotFound("the {} expression " \
                         "was not found".format(repr(r_name)))
             
             type = type()
             re_pattern = re_pattern[:pos] + "(" + type.regex + ")" + \
                     re_pattern[pos + len(r_name) + 1:]
+            py_pos = py_pattern.find(":")
+            py_pattern = py_pattern[:py_pos] + "{}" + py_pattern[
+                    py_pos + len(r_name) + 1:]
             pos = re_pattern.find(":")
             self.patterns.append(type)
         
         re_pattern = "^" + re_pattern + "$"
+        self.py_pattern = py_pattern
+        print("py", py_pattern)
         return re.compile(re_pattern)

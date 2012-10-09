@@ -1,13 +1,17 @@
 users:
-  pattern: /users/
+  pattern: /users
   controller: main.Users.list
 
 user_view:
   pattern: /users/:id
   controller: main.Users.view
 
+user_new:
+  pattern: /users/new
+  controller: main.Users.new
+
 user_create:
-  pattern: /users/
+  pattern: /users/create
   controller: main.Users.create
   method: POST
 
@@ -15,3 +19,7 @@ user_update:
   pattern: /users/:id
   controller: main.Users.update
   method: PUT
+
+user_delete:
+  pattern: /users/:id/delete
+  controller: main.Users.delete

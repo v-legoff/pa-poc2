@@ -81,4 +81,5 @@ class Config:
             if methods:
                 params = [methods]
             
-            server.dispatcher.add_route(pattern, controller, action, *params)
+            server.dispatcher.add_route(name, pattern, controller,
+                    action, *params)
