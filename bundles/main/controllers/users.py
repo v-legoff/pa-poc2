@@ -4,6 +4,7 @@ from bundles.main.models.user import User
 class Users(Controller):
     
     def list(self):
+        """Return the list of users."""
         return self.render("main.user.list", users=User.get_all())
     
     @Controller.model_id("main.User")

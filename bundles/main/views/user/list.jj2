@@ -1,0 +1,21 @@
+{% extends "layout/base.jj2" %}
+{% block title %}Show users{% endblock %}
+    {% block content %}
+        <h1>List of users</h1>
+        {% if users %}
+        <table>
+            <tr>
+                <td>ID</td>
+                <td>Username</td>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+            </tr>
+            {% endfor %}
+            </table>
+        {% else %}
+        <p>No user defined yet.</p>
+        {% endif %}
+    {% endblock %}
