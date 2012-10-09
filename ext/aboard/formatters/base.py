@@ -38,7 +38,7 @@ class Formatter(metaclass=FormatterMetaclass):
     specify the formatter's name as a class attribute.
     
     Methods defined:
-        convert(input) -- convert the input in the format
+        render(template_name, **input) -- render in the format
     
     """
     
@@ -46,6 +46,6 @@ class Formatter(metaclass=FormatterMetaclass):
     formats = ()
     
     @staticmethod
-    def convert(input):
+    def render(template_name, **datas):
         """Convert the input in the class format."""
         raise NotImplementedError

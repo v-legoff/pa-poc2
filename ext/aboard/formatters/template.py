@@ -26,20 +26,24 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Module containing the formatter for YAML."""
-
-import yaml
+"""Module containing the formatter for templates."""
 
 from ext.aboard.formatters.base import Formatter
 
-class YAMLFormatter(Formatter):
+class TemplateFormatter(Formatter):
     
-    """Formatter to convert datas in the YAML format."""
+    """Formatter to convert datas in the templating format.
     
-    name = "yaml"
-    formats = ("yml", "yaml")
+    This formatter is a regular one, but it renders the input
+    datas using a templating system, currently Jinja2.
+    
+    """
+    
+    name = "template"
+    formats = ("jj2", "tmpl")
     
     @classmethod
     def render(cls, template_name, **datas):
         """Convert the input in YAML."""
-        return yaml.dump(datas, default_flow_style=False)
+        template = cls.server.templating_system.get_template(template_name)
+        return template.render(**datas)

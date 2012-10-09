@@ -51,3 +51,4 @@ to use it.
 from ext.aboard.formatters.meta import formatters, formats
 
 import ext.aboard.formatters.yaml
+import ext.aboard.formatters.template

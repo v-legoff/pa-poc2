@@ -36,6 +36,7 @@ import yaml
 from ext.aboard.bundle import Bundle
 from ext.aboard.dc import connectors
 from ext.aboard.formatters import formats
+from ext.aboard.formatters.base import Formatter
 from ext.aboard.model import Model
 from ext.aboard.router.dispatcher import AboardDispatcher
 from ext.aboard.templating import Jinja2
@@ -52,6 +53,7 @@ class Server:
         self.configurations = {}
         self.templating_system = Jinja2(self)
         self.templating_system.setup()
+        Formatter.server = self
     
     @property
     def models(self):

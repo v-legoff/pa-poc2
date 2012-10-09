@@ -11,7 +11,7 @@
             {% for user in users %}
             <tr>
                 <td>{{ user.id }}</td>
-                <td>{{ user.username }}</td>
+                <td>{{ link_to("user_view", user.id, name=user.username) }}</td>
             </tr>
             {% endfor %}
             </table>

@@ -1,7 +1,7 @@
 # Configuration of the available formats
 
 # Default formatting (if no format is specified)
-default_format: "yml"
+default_format: "jj2"
 
 # Allowed format (specified as file extension for instance 'xml')
-allowed_formats: [ yml, yaml ]
+allowed_formats: [ yml, yaml, jj2 ]
