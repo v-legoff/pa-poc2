@@ -89,7 +89,7 @@ class ID(PatternType):
     """
     
     name = "id"
-    regex = r"(\d+)"
+    regex = r"\d+"
     
     def convert(self, expression):
         """Return the converted expression if possible.

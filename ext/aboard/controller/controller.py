@@ -28,6 +28,8 @@
 
 """Module defining the Controller class, described below."""
 
+import cherrypy
+
 from ext.aboard.formatters import formats
 from ext.aboard.model.exceptions import ObjectNotFound
 
@@ -44,7 +46,22 @@ class Controller:
     def __init__(self, server):
         """Build the controller."""
         self.server = server
-        self.request = None
+    
+    @property
+    def request(self):
+        """Return the serving Cherrypy request."""
+        return cherrypy.serving.request
+    
+    @property
+    def requested_format(self):
+        """Return the requested format."""
+        path = self.request.path_info
+        format = path.split(".")[-1]
+        if len(format) == len(path):
+            # The format is not defined
+            format = ""
+        
+        return format
     
     @staticmethod
     def model_id(*names_of_model):
@@ -86,7 +103,7 @@ class Controller:
     
     def render(self, view, **representations):
         """Render datas using the formatters."""
-        format = self.request.format
+        format = self.requested_format
         if not format:
             format = self.server.default_format
         

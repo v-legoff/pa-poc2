@@ -80,7 +80,6 @@ class Route:
         self.pattern = pattern
         self.controller = controller
         self.callable = callable
-        self.expected_arguments = []
         if isinstance(methods, str):
             methods = [methods]
         self.methods = tuple(meth_name.upper() for meth_name in methods)
@@ -99,13 +98,9 @@ class Route:
         
         match = self.re_pattern.search(path)
         if match:
-            groups = list(match.groups())
-            self.expected_arguments = []
-            for i, pattern in enumerate(self.patterns):
-                value = pattern.convert(groups[i])
-                self.expected_arguments.append(groups[i])
+            return match.groups()
         
-        return match is not None
+        return False
     
     def get_path(self, *arguments):
         """Return the route with its arguments."""

@@ -73,14 +73,6 @@ class AboardDispatcher:
         if path.endswith("/"):
             path = path[:-1]
         
-        # Get the format
-        format = path.split(".")[-1].lower()
-        if len(format) < len(path):
-            path = path[:-(len(format) + 1)]
-        else:
-            format = ""
-        
-        cherrypy.serving.request.format = format
         return Dispatcher.__call__(self, path)
     
     def find_handler(self, path):
@@ -89,13 +81,21 @@ class AboardDispatcher:
         request.config = {
                 "tools.encode.on": True,
         }
-        request.is_index = True
+        request.is_index = False
+        
+        # Get the path without taking in account the format
+        format = path.split(".")[-1].lower()
+        if len(format) < len(path):
+            path = path[:-(len(format) + 1)]
+        else:
+            format = ""
+        
         for route in self.routes.values():
             print("match?", request.method, route, path, end=" ")
-            if route.match(request, path):
+            match = route.match(request, path)
+            if not isinstance(match, bool):
                 print("yes")
-                route.controller.request = request
-                return route.callable, route.expected_arguments
+                return route.callable, match
             else:
                 print("no")
         return None, []
