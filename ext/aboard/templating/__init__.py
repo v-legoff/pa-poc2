@@ -26,10 +26,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Package containing the templating systems for Python Aboard."""
+"""Package for the Jinja2 templating system."""
 
-from ext.aboard.templating.jinja2 import Jinja2
-
-templating_systems = {
-    "jinja2": Jinja2,
-}
+from ext.aboard.templating.templating import Jinja2

@@ -30,8 +30,8 @@
 
 from jinja2 import Environment
 
-from ext.aboard.templating.jinja2.functions import TemplateFunctions
-from ext.aboard.templating.jinja2.loader import PAFileSystemLoader
+from ext.aboard.templating.functions import TemplateFunctions
+from ext.aboard.templating.loader import PAFileSystemLoader
 
 class Jinja2:
     
