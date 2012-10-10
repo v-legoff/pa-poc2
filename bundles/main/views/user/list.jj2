@@ -13,7 +13,7 @@
             <tr>
                 <td>{{ user.id }}</td>
                 <td>{{ link_to("user_view", user.id, name=user.username) }}</td>
-                <td>{{ link_to("user_delete", user.id, name="Delete") }}</td>
+                <td>{{ link_to("user_delete", user.id, name="Delete", confirm="Do you really want to del the user " ~ user.username ~ "?") }}</td>
             </tr>
             {% endfor %}
             </table>

@@ -60,7 +60,7 @@ class TemplateFunctions:
         
         self.server = server
     
-    def link_to(self, route, *parameters, name="here"):
+    def link_to(self, route, *parameters, name="here", confirm=None):
         """Return a <a> tag.
         
         The route must be its name given in the 'routing.yml'
@@ -78,6 +78,9 @@ class TemplateFunctions:
         
         parameters = [str(param) for param in parameters]
         href = route.get_path(*parameters) + ".jj2"
-        link = "<a href=\"{href}\">{name}</a>".format(
-                href=href, name=name)
+        confirmation = ""
+        if confirm:
+            confirmation = " onclick=\"return confirm('" + confirm + "')\""
+        link = "<a href=\"{href}\"{confirmation}>{name}</a>".format(
+                href=href, name=name, confirmation=confirmation)
         return link
