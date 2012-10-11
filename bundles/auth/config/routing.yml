@@ -1,0 +1,43 @@
+# Controller: User
+users:
+  pattern: /users
+  controller: auth.User.list
+
+user_view:
+  pattern: /users/:id
+  controller: auth.User.view
+
+user_new:
+  pattern: /users/new
+  controller: auth.User.new
+  method: GET
+
+user_create:
+  pattern: /users/new
+  controller: auth.User.create
+  method: POST
+
+user_edit:
+  pattern: /users/:id/edit
+  controller: auth.User.edit
+  method: GET
+
+user_update:
+  pattern: /users/:id/edit
+  controller: auth.User.update
+  method: POST
+
+user_delete:
+  pattern: /users/:id/delete
+  controller: auth.User.delete
+
+# Controller: login
+login:
+  pattern: /login
+  controller: auth.Login.login
+  method: GET
+
+do_login:
+  pattern: /login
+  controller: auth.Login.do_login
+  method: POST

@@ -2,8 +2,8 @@
 {% block title %}Edit the user {{ user.username }}{% endblock %}
 {% block content %}
 {% set method = "POST" %}
-{% set action = "/users/" ~ user.id ~ "/update" %}
+{% set action = "/users/" ~ user.id ~ "/edit" %}
 {% set username = user.username %}
 {% set submit = "Update" %}
-{% include "main.user.edit" with context %}
+{% include "auth.user._edit" with context %}
 {% endblock %}

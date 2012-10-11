@@ -82,6 +82,7 @@ class AboardDispatcher:
                 "tools.encode.on": True,
         }
         request.is_index = False
+        print(request.headers)
         
         # Get the path without taking in account the format
         format = path.split(".")[-1].lower()

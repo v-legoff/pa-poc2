@@ -2,7 +2,7 @@
 {% block title %}Create a new user{% endblock %}
 {% block content %}
 {% set method = "POST" %}
-{% set action = "/users/create" %}
+{% set action = "/users/new" %}
 {% set submit = "Create user" %}
-{% include "main.user.edit" with context %}
+{% include "auth.user._edit" with context %}
 {% endblock %}

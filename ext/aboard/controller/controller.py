@@ -101,6 +101,17 @@ class Controller:
             return callable_wrapper
         return decorator
     
+    @staticmethod
+    def authenticated(function):
+        """Prevent any no-logged-in users to access the action."""
+        def callable_wrapper(controller, *args, **kwargs):
+            """Wrapper of the controller."""
+            if controller.server.authenticated():
+                return function(controller, *c_args, **kwargs)
+            
+            return "You are not logged in."
+        return callable_wrapper
+    
     def render(self, view, **representations):
         """Render datas using the formatters."""
         format = self.requested_format
@@ -111,3 +122,16 @@ class Controller:
             return "Unknown format {}.".format(format)
         
         return formats[format].render(view, **representations)
+    
+    def get_cookie(self, name, value=None):
+        """Return, if found, the cookie.
+        
+        Otherwise, return value.
+        
+        
+        """
+        return self.server.get_cookie(name, value)
+    
+    def set_cookie(self, name, value, max_age, path="/", version=1):
+        """Set a cookie."""
+        self.server.set_cookie(name, value, max_age, path, version)

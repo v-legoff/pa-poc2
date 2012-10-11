@@ -28,6 +28,7 @@
 
 """Module containg the Python Aboard server, build on CherryPy."""
 
+import hashlib
 import os
 
 import cherrypy
@@ -136,3 +137,36 @@ class Server:
         bundle = self.bundles[bundle_name]
         model = bundle.models[model_name]
         return model
+    
+    def get_cookie(self, name, value=None):
+        """Get the cookie and return its value or 'value' if not found."""
+        try:
+            return cherrypy.request.cookie[name].value
+        except KeyError:
+            return value
+    
+    def set_cookie(self, name, value, max_age, path="/", version=1):
+        """Set a cookie."""
+        cookie = cherrypy.response.cookie
+        cookie[name] = value
+        cookie[name]['path'] = path
+        cookie[name]['max-age'] = max_age
+        cookie[name]['version'] = 1
+    
+    def authenticated(self):
+        """Return whether the current request is authenticated or not."""
+        client_token = self.get_cookie("PA-client-token")
+        if not client_token:
+            print("no cookie")
+            return False
+        
+        headers = cherrypy.request.headers
+        if "Remote-Addr" not in headers:
+            print("no IP")
+            return False
+        
+        to_hash = "Python-Aboard " + headers.get("Remote-Addr", "none")
+        to_hash += " " + headers.get("User-Agent", "unknown")
+        to_hash = to_hash.encode()
+        token = hashlib.sha256(to_hash).digest()
+        return client == client_token
