@@ -32,11 +32,11 @@ import os
 
 class ServiceManager:
     
-    """Class containing the bundle's services.
+    """Class containing the server's services.
     
     Each service is represented by a class.  Each time
     a service is called (see __getattr__), an instance of
-    this service is created and will exists as long as
+    this service is created and will exist as long as
     it is needed.
     
     The services are also stored in the 'services'
@@ -47,9 +47,8 @@ class ServiceManager:
     
     """
     
-    def __init__(self, bundle):
+    def __init__(self):
         """Build the service manager."""
-        self.bundle = bundle
         self.services = {}
     
     def __getattr__(self, name):

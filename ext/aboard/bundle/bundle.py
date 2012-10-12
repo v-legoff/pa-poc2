@@ -31,7 +31,6 @@ import os
 import yaml
 
 from ext.aboard.bundle.config import Config
-from ext.aboard.bundle.service import ServiceManager
 from ext.aboard.bundle.meta_datas import MetaDatas
 
 """Module containing the Bundle class, defined below."""
@@ -64,7 +63,6 @@ class Bundle:
         self.models = {}
         self.views = {}
         self.config = None
-        self.services = ServiceManager(self)
     
     def setup(self, server):
         """Setup the bundle following the setup process.
@@ -97,6 +95,7 @@ class Bundle:
         
         self.load_controllers(server)
         self.load_models(server)
+        self.load_services(server)
         self.config = Config(self.name)
         cfg_setup = self.config.setup(server)
         if not cfg_setup:
@@ -141,7 +140,7 @@ class Bundle:
             load = getattr(load, node)
         
         controller = getattr(load, controller_name)
-        controller = controller(server)
+        controller = controller(self)
         controller.server = server
         self.controllers[controller_name] = controller
     
@@ -172,8 +171,10 @@ class Bundle:
         """Load the bundle services."""
         path = "bundles/" + self.name + "/services"
         py_path = "bundles." + self.name + ".services"
+        print(path, os.path.exists(path))
         if os.path.exists(path):
             for file_name in os.listdir(path):
+                print(file_name)
                 if not file_name.startswith("__") and \
                         file_name.endswith(".py") and len(file_name) > 3:
                     file_path = path + "/" + file_name
@@ -189,4 +190,5 @@ class Bundle:
             load = getattr(load, node)
         
         service = getattr(load, service_name)
-        self.services.register(service_name, service)
+        print("service", py_name)
+        server.services.register(py_name, service)

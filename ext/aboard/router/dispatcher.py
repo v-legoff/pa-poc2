@@ -82,7 +82,6 @@ class AboardDispatcher:
                 "tools.encode.on": True,
         }
         request.is_index = False
-        print(request.headers)
         
         # Get the path without taking in account the format
         format = path.split(".")[-1].lower()
@@ -92,13 +91,10 @@ class AboardDispatcher:
             format = ""
         
         for route in self.routes.values():
-            print("match?", request.method, route, path, end=" ")
             match = route.match(request, path)
             if not isinstance(match, bool):
-                print("yes")
                 return route.callable, match
-            else:
-                print("no")
+        
         return None, []
     
     def add_route(self, name, pattern, controller, callable,

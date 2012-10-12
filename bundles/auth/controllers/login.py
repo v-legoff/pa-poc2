@@ -20,7 +20,7 @@ class Login(Controller):
             return "Invalid username."
         
         if user.check_password(password):
-            self.services.authenticate(self.request, user)
+            self.server.services.authentication.authenticate(self.request, user)
             return "Logged in."
         else:
             return "Invalid password."

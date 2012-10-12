@@ -43,9 +43,10 @@ class Controller:
     
     """
     
-    def __init__(self, server):
+    server = None
+    def __init__(self, bundle):
         """Build the controller."""
-        self.server = server
+        self.bundle = bundle
     
     @property
     def request(self):

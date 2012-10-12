@@ -35,11 +35,14 @@ import cherrypy
 import yaml
 
 from ext.aboard.bundle import Bundle
+from ext.aboard.controller import Controller
 from ext.aboard.dc import connectors
 from ext.aboard.formatters import formats
 from ext.aboard.formatters.base import Formatter
 from ext.aboard.model import Model
 from ext.aboard.router.dispatcher import AboardDispatcher
+from ext.aboard.service import Service
+from ext.aboard.service.manager import ServiceManager
 from ext.aboard.templating import Jinja2
 
 class Server:
@@ -52,9 +55,13 @@ class Server:
         self.dispatcher = AboardDispatcher()
         self.bundles = {}
         self.configurations = {}
+        self.services = ServiceManager()
         self.templating_system = Jinja2(self)
         self.templating_system.setup()
+        
+        Controller.server = self
         Formatter.server = self
+        Service.server = self
     
     @property
     def models(self):
