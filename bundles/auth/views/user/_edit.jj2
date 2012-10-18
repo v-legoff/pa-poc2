@@ -1,5 +1,5 @@
-<form action="{{ action }}" method="{{ method }}">
-    <p>Username: <input type="text" value="{{ username }}" name="username" /></p>
+<form action="<= action =>" method="<= method =>">
+    <p>Username: <input type="text" value="<= username =>" name="username" /></p>
     <p>Password: <input type="password" name="password" /></p>
-    <p><input type="submit" value="{{ submit }}" /></p>
+    <p><input type="submit" value="<= submit =>" /></p>
 </form>

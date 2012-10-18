@@ -1,24 +1,24 @@
-{% extends "layout/base.jj2" %}
-{% block title %}Show users{% endblock %}
-    {% block content %}
+<% extends "layout/base.jj2" %>
+<% block title %>Show users<% endblock %>
+    <% block content %>
         <h1>List of users</h1>
-        {% if users %}
+        <% if users %>
         <table>
             <tr>
                 <td>ID</td>
                 <td>Username</td>
                 <td> </td>
             </tr>
-            {% for user in users %}
+            <% for user in users %>
             <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ link_to("user_view", user.id, name=user.username) }}</td>
-                <td>{{ link_to("user_delete", user.id, name="Delete", confirm="Do you really want to del the user " ~ user.username ~ "?") }}</td>
+                <td><= user.id =></td>
+                <td><= link_to("user_view", user.id, name=user.username) =></td>
+                <td><= link_to("user_delete", user.id, name="Delete", confirm="Do you really want to del the user " ~ user.username ~ "?") =></td>
             </tr>
-            {% endfor %}
+            <% endfor %>
             </table>
-        {% else %}
+        <% else %>
         <p>No user defined yet.</p>
-        {% endif %}
-        {{ link_to("user_new", name="Create a new user") }}
-    {% endblock %}
+        <% endif %>
+        <= link_to("user_new", name="Create a new user") =>
+    <% endblock %>
