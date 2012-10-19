@@ -70,15 +70,26 @@ class WikiService(Service):
         self.markup_delimiter_end = "&gt;"
         self.markup_delimiter_close = "/"
         self.expressions = []
+        self.exceptions = []
         self.init()
     
     def init(self):
         """Initialize the wiki formatter by adding expressions and markups."""
+        self.add_except_expression("@", "@")
+        self.add_except_markup("pre")
         self.add_expression("bold", r"\*(.*?)\*", "<strong>\\1<EOMstrong>")
         self.add_expression("italic", "/(.*?)/", "<em>\\1<EOMem>")
         
         # Test (o delete)
-        text = "This is a normal text *with some in bold* and /again some/."
+        text = """
+            This is some text with *that* in bold,
+            But @*this part* should@ not be interpreted at all.
+            <pre>
+            This one is a long
+            non interpreted text, somehow.</pre>
+            and, finally, /this should be in italic/ and *bold*.
+            Well, @that *one* again@.
+        """
         print("Convert", self.convert_text(text))
     
     def add_expression(self, name, regexp, replacement, options=0):
@@ -139,6 +150,16 @@ class WikiService(Service):
         exp_pos = names.find(name)
         del self.expressions[exp_pos]
     
+    def add_except_expression(self, start, end, options=0):
+        """Add an expression for a Wiki exception.
+        
+        Exceptions are not interpreted.  If this expression is found, it is
+        deleted and its content (the second group) is copied into a
+        temporary field and paste in the original text, unchanged, at the end of the process.
+        
+        """
+        self.exceptions.append((start, end, options))
+        
     def add_markup(self, name, markup, html):
         """Add a new markup.
         
@@ -165,7 +186,6 @@ class WikiService(Service):
         end = "EOM"
         close = self.markup_delimiter_close
         regexp = start + markup + end + "(.*?)" + start + close + markup + end
-        print("reg", regexp)
         replacement = html.format(string="\\1")
         self.add_expression(name, regexp, replacement)
     
@@ -186,13 +206,42 @@ class WikiService(Service):
         """Remove the markup."""
         self.remove_expression(name)
     
+    def add_except_markup(self, markup):
+        """Add a markup exception."""
+        start = self.markup_delimiter_start
+        end = self.markup_delimiter_end
+        close = self.markup_delimiter_close
+        markup_start = start + markup + end
+        markup_end = start + close + markup + end
+        self.add_except_expression(markup_start, markup_end, re.DOTALL)
+    
     def convert_text(self, text):
         """Return the HTML text converted from the text argument."""
         raw_text = self.get_raw_text(text)
+        raw_text = raw_text.replace("{", "{{").replace("}", "}}")
+        
+        # First remove the exceptions
+        raw_exceptions = {}
+        tmp_exceptions = []
+        def replace(match):
+            name = "exp_" + str(i) + "_" + str(len(tmp_exceptions))
+            tmp_exceptions.append(None)
+            return "{" + name + "}"
+        
+        for i, (start, end, opts) in enumerate(self.exceptions):
+            tmp_exceptions = []
+            s_regexp = start + "(.*?)" + end
+            r_regexp = "(" + start + ".*?" + end + ")"
+            for j, content in enumerate(re.findall(s_regexp, raw_text, opts)):
+                name = "exp_" + str(i) + "_" + str(j)
+                raw_exceptions[name] = content
+            
+            raw_text = re.sub(r_regexp, replace, raw_text, flags=opts)
+        
         for name, regexp, replacement in self.expressions:
             raw_text = regexp.sub(replacement, raw_text)
         
-        return raw_text.replace("<EOM", "</")
+        return raw_text.replace("<EOM", "</").format(**raw_exceptions)
     
     @staticmethod
     def get_raw_text(text):
