@@ -56,6 +56,8 @@ class Server:
         self.bundles = {}
         self.configurations = {}
         self.services = ServiceManager()
+        self.services.register_defaults()
+        wiki = self.services.wiki
         self.templating_system = Jinja2(self)
         self.templating_system.setup()
         
@@ -71,7 +73,6 @@ class Server:
             models.extend(list(bundle.models.values()))
         
         return models
-    
     
     def load_configurations(self):
         """This method reads the configuration files found in /config."""

@@ -26,47 +26,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-import os
+"""Package containing the Python Aboard default services.
 
-from ext.aboard.service.default import defaults
+The services defined here are generic and can be useful for many different
+applications.  A developer can change a service behaviour by inheriting a
+new service (with the same name) and replace some (or all) of its methods.
 
-"""Module containing the Servicemanager class."""
+"""
 
-class ServiceManager:
-    
-    """Class containing the server's services.
-    
-    Each service is represented by a class.  Each time
-    a service is called (see __getattr__), an instance of
-    this service is created and will exist as long as
-    it is needed.
-    
-    The services are also stored in the 'services'
-    dictionary ({name: class}).  Note that:
-    >>> manager.service #  will create a new service instance
-    Whereas:
-    >>> manager["service"] #  will return the service class
-    
-    """
-    
-    def __init__(self):
-        """Build the service manager."""
-        self.services = {}
-    
-    def __getattr__(self, name):
-        """Return a created service if found."""
-        service = self.services.get(name)
-        if service:
-            return service()
-        
-        raise AttributeError("attribute {} not found".format(
-                repr(name)))
-    
-    def register(self, name, service):
-        """Register a service in the service manager;"""
-        self.services[name] = service
-    
-    def register_defaults(self):
-        """Register the default services."""
-        for service in defaults:
-            self.register(service.name, service)
+from ext.aboard.service.default.wiki import WikiService
+
+defaults = [
+    WikiService,
+]
