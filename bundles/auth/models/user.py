@@ -31,7 +31,6 @@ class User(Model):
         for i in range(len_salt):
             salt += random.choice(to_pick)
         
-        print("Generated salt:", salt)
         return salt
     
     def update_password(self, password, hash_alg="sha1"):

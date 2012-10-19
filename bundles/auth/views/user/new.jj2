@@ -1,8 +1,8 @@
-{% extends "layout/base.jj2" %}
-{% block title %}Create a new user{% endblock %}
-{% block content %}
-{% set method = "POST" %}
-{% set action = "/users/new" %}
-{% set submit = "Create user" %}
-{% include "auth.user._edit" with context %}
-{% endblock %}
+<% extends "layout/base.jj2" %>
+<% block title %>Create a new user<% endblock %>
+<% block content %>
+<% set method = "POST" %>
+<% set action = "/users/new" %>
+<% set submit = "Create user" %>
+<% include "auth.user._edit" with context %>
+<% endblock %>

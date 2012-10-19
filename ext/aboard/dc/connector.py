@@ -187,6 +187,7 @@ class DataConnector:
         if len(values) == 1:
             values = values[0]
         
+        print(cache, values in cache)
         return cache.get(values)
     
     def cache_object(self, object):

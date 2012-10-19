@@ -32,5 +32,6 @@ The main class, the Model class, is defined in the ./model.py file.
 
 """
 
+from ext.aboard.model.exceptions import *
 from ext.aboard.model.model import *
 from ext.aboard.model.types import *

@@ -1,11 +1,12 @@
 import hashlib
 import re
+import time
 
 from ext.aboard.model.exceptions import ObjectNotFound
 from ext.aboard.service import Service
 
-# Constants
-RE_AUTH = re.compile(r"^(\d+)_([a-f0-9]{128})$")
+# XConstants
+RE_AUTH = re.compile(r"^[0-9a-f]{128}$")
 
 class Authentication(Service):
     
@@ -21,33 +22,33 @@ class Authentication(Service):
             print("Regex does not match")
             return False
         
-        uid, signature = re_auth.groups()
+        print(value)
         try:
-            user = self.server.get_model("auth.User").find(int(uid))
+            token = self.server.get_model("auth.Token").find(value=value)
+        except ObjectNotFound:
+            print("Token not found")
+            return False
+        
+        try:
+            user = self.server.get_model("auth.User").find(token.user)
         except ObjectNotFound:
             print("user not found")
             return False
         
-        remote_addr = request.headers["Remote-Addr"]
-        user_agent = request.headers["User-Agent"]
-        to_hash = user.username + user.password + user.salt
-        to_hash += remote_addr + user_agent
-        digest = hashlib.sha512(to_hash.encode()).hexdigest()
-        return digest == signature
+        return True
     
     def authenticate(self, request, user):
         """Authenticate the user.
         
-        This method registers a cookie containing informations (the user ID,
-        the user hashed password, the user salt, the User-Agent, the
-        Remote-Addr.
+        This method:
+            Create a new token
+            Combine the token public value and the remote address
+            Store on the client-side (cookie) the value
         
         """
         remote_addr = request.headers["Remote-Addr"]
-        user_agent = request.headers["User-Agent"]
-        to_hash = user.username + user.password + user.salt
-        to_hash += remote_addr + user_agent
-        digest = hashlib.sha512(to_hash.encode()).hexdigest()
-        value = str(user.id) + "_" + digest
+        Token = self.server.get_model("auth.Token")
+        token = Token(user=user.id, timestamp=int(time.time()), value=".")
+        token.set_value()
         name = "python-aboard-auth"
-        self.server.set_cookie(name, value, 900)
+        self.server.set_cookie(name, token.value, 900)

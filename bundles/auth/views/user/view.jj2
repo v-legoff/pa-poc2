@@ -1,7 +1,7 @@
-{% extends "layout/base.jj2" %}
-{% block title %}Show user {{ user.id }}{% endblock %}
-    {% block content %}
-        <h1>User: {{ user.username}}</h1>
-        <p>{{ link_to("user_edit", user.id, name="Edit this user") }}</p>
-        <p>Go back to {{ link_to("users", name="the list of users") }}</p>
-    {% endblock %}
+<% extends "layout/base.jj2" %>
+<% block title %>Show user <= user.id =><% endblock %>
+    <% block content %>
+        <h1>User: <= user.username=></h1>
+        <p><= link_to("user_edit", user.id, name="Edit this user") =></p>
+        <p>Go back to <= link_to("users", name="the list of users") =></p>
+    <% endblock %>

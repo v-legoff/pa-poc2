@@ -43,7 +43,15 @@ class Jinja2:
     
     def setup(self):
         """Setup the templating system (create the environment here)."""
-        self.environment = Environment(loader=PAFileSystemLoader())
+        self.environment = Environment(loader=PAFileSystemLoader(),
+                block_start_string="<%",
+                block_end_string="%>",
+                variable_start_string="<=",
+                variable_end_string="=>",
+                comment_start_string="<#",
+                comment_end_string="#>",
+                cache_size=-1,
+        )
         self.functions = TemplateFunctions(self.server,
                 self.environment.globals)
     

@@ -1,9 +1,9 @@
-{% extends "layout/base.jj2" %}
-{% block title %}Edit the user {{ user.username }}{% endblock %}
-{% block content %}
-{% set method = "POST" %}
-{% set action = "/users/" ~ user.id ~ "/edit" %}
-{% set username = user.username %}
-{% set submit = "Update" %}
-{% include "auth.user._edit" with context %}
-{% endblock %}
+<% extends "layout/base.jj2" %>
+<% block title %>Edit the user <= user.username =><% endblock %>
+<% block content %>
+<% set method = "POST" %>
+<% set action = "/users/" ~ user.id ~ "/edit" %>
+<% set username = user.username %>
+<% set submit = "Update" %>
+<% include "auth.user._edit" with context %>
+<% endblock %>
