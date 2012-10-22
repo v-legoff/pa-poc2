@@ -77,16 +77,16 @@ class WikiService(Service):
         """Initialize the wiki formatter by adding expressions and markups."""
         self.add_except_expression("@", "@")
         self.add_except_markup("pre")
-        self.add_expression("bold", r"\*(.*?)\*", "<strong>\\1<EOMstrong>")
-        self.add_expression("italic", "/(.*?)/", "<em>\\1<EOMem>")
+        self.add_expression("italic", "/(.*?)/", "<em>\\1</em>")
+        self.add_expression("bold", r"\*(.*?)\*", "<strong>\\1</strong>")
         
         # Test (o delete)
         text = """
             This is some text with *that* in bold,
             But @*this part* should@ not be interpreted at all.
             <pre>
-            This one is a long
-            non interpreted text, somehow.</pre>
+            This one is a *long*
+            non /interpreted/ text, somehow.</pre>
             and, finally, /this should be in italic/ and *bold*.
             Well, @that *one* again@.
         """
@@ -183,7 +183,7 @@ class WikiService(Service):
         
         """
         start = self.markup_delimiter_start
-        end = "EOM"
+        end = self.markup_delimiter_end
         close = self.markup_delimiter_close
         regexp = start + markup + end + "(.*?)" + start + close + markup + end
         replacement = html.format(string="\\1")
@@ -241,7 +241,7 @@ class WikiService(Service):
         for name, regexp, replacement in self.expressions:
             raw_text = regexp.sub(replacement, raw_text)
         
-        return raw_text.replace("<EOM", "</").format(**raw_exceptions)
+        return raw_text.format(**raw_exceptions)
     
     @staticmethod
     def get_raw_text(text):
