@@ -34,6 +34,7 @@ new service (with the same name) and replace some (or all) of its methods.
 
 """
 
+from ext.aboard.service.default.authentication import AuthenticationService
 from ext.aboard.service.default.wiki import WikiService
 
 defaults = [
