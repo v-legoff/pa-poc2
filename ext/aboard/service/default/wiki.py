@@ -63,27 +63,35 @@ class WikiService(Service):
     """
     
     name = "wiki"
-    def __init__(self):
+    def __init__(self, start="&lt;", end="&gt;", close="/"):
         """Service constructor."""
         Service.__init__(self)
-        self.markup_delimiter_start = "&lt;"
-        self.markup_delimiter_end = "&gt;"
-        self.markup_delimiter_close = "/"
+        self.markup_delimiter_start = start
+        self.markup_delimiter_end = end
+        self.markup_delimiter_close = close
         self.expressions = []
         self.exceptions = []
-        self.init()
-    
-    def init(self):
-        """Initialize the wiki formatter by adding expressions and markups."""
+        
+        # Add the exceptions
         self.add_except_expression("@", "@")
         self.add_except_markup("pre")
+        
+        
+        # Add the expressions and markups
         self.add_expression("italic", "/(.*?)/", "<em>\\1</em>")
         self.add_expression("bold", r"\*(.*?)\*", "<strong>\\1</strong>")
+        self.add_expression(
+                "header1",
+                r"^(\s*)h1\.\s+(.*?)\s*$",
+                r"\1<h1>\2</h1>",
+                re.MULTILINE
+        )
         
         # Test (o delete)
         text = """
+            h1. A test
             This is some text with *that* in bold,
-            But @*this part* should@ not be interpreted at all.
+            But @*this part* h1. should@ not be interpreted at all.
             <pre>
             This one is a *long*
             non /interpreted/ text, somehow.</pre>

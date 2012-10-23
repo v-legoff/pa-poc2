@@ -26,38 +26,42 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Module containing the Jinja2 templating system."""
+"""Module containing the TemplateFilters class."""
 
-from jinja2 import Environment
-
-from ext.aboard.templating.filters import TemplateFilters
-from ext.aboard.templating.functions import TemplateFunctions
-from ext.aboard.templating.loader import PAFileSystemLoader
-
-class Jinja2:
+class TemplateFilters:
     
-    """Class which wraps the Jinja2 templating system."""
+    """Class containing the templates filters.
     
-    def __init__(self, server):
+    The methods defined in this class are usable as filters
+    inside Jinja2 templates.  New methods are atuomatically added to
+    the list of filters.
+    
+    For instance, if you define an instance method like that:
+    >>>     def wiki(self, text):
+    You can call it in a template like that:
+        "some text"|wiki
+    
+    The first argument ('self' as in any instance methods) is used
+    to reach global informations, such as the server.
+    
+    """
+    
+    def __init__(self, server, filters):
+        """Initialize and add the functions."""
+        for name in dir(self):
+            function = getattr(self, name)
+            if not callable(function):
+                continue
+            
+            if name.startswith("_"):
+                continue
+            
+            print("filter", name)
+            filters[name] = function
+        
         self.server = server
-        self.environment = None
     
-    def setup(self):
-        """Setup the templating system (create the environment here)."""
-        self.environment = Environment(loader=PAFileSystemLoader(),
-                block_start_string="<%",
-                block_end_string="%>",
-                variable_start_string="<=",
-                variable_end_string="=>",
-                comment_start_string="<#",
-                comment_end_string="#>",
-                cache_size=-1,
-        )
-        self.functions = TemplateFunctions(self.server,
-                self.environment.globals)
-        self.filters = TemplateFilters(self.server,
-                self.environment.filters)
-    
-    def get_template(self, template):
-        """Get and return the template."""
-        return self.environment.get_template(template)
+    def wiki(self, text):
+        """Return the wiki formatted text."""
+        wiki_service = self.server.services.wiki
+        return wiki_service.convert_text(text)
