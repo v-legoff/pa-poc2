@@ -26,18 +26,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Module containing the formatter for YAML."""
+"""Module containing the formatter for JSON."""
 
-import yaml
+import json
 
 from ext.aboard.formatters.base import Formatter
 
-class YAMLFormatter(Formatter):
+class JSONFormatter(Formatter):
     
-    """Formatter to convert datas in the YAML format."""
+    """Formatter to convert datas in the JSON format."""
     
-    name = "yaml"
-    formats = ("yml", "yaml")
+    name = "json"
+    formats = ("json", )
     
     @classmethod
     def render(cls, template_name, **datas):
@@ -45,4 +45,4 @@ class YAMLFormatter(Formatter):
         if len(datas) == 1:
             datas = list(datas.values())[0]
         
-        return yaml.dump(datas, default_flow_style=False)
+        return json.dumps(datas, indent=4)

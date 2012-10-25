@@ -216,10 +216,10 @@ class Model(metaclass=MetaModel):
             attrs[name] = value
         
         if filters is None:
-            return dict(attrs)
+            return attrs
         elif isinstance(filters, list):
             filter_attrs = OrderedDict()
             for attr in filters:
                 if attr in attrs:
                     filter_attrs[attr] = attrs[attr]
-            return dict(filter_attrs)
+            return filter_attrs

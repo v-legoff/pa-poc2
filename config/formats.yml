@@ -4,4 +4,4 @@
 default_format: "jj2"
 
 # Allowed format (specified as file extension for instance 'xml')
-allowed_formats: [ yml, yaml, jj2 ]
+allowed_formats: [ jj2, json, yml ]
