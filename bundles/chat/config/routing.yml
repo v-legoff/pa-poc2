@@ -1,0 +1,14 @@
+# Controller: Message
+messages:
+  pattern: /chat
+  controller: chat.Message.list
+  method: GET
+
+message_view:
+  pattern: /chat/:id
+  controller: chat.Message.view
+
+message_create:
+  pattern: /chat/new
+  controller: chat.Message.create
+  method: POST
