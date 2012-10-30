@@ -28,10 +28,13 @@
 
 """This module contains the AboardDispatcher class, defined below."""
 
+import os
+
 import cherrypy
 Dispatcher = cherrypy.dispatch.Dispatcher
 
 from ext.aboard.router.route import Route, ALL_METHODS
+from ext.aboard.router.static import StaticRoute
 
 class AboardDispatcher:
     
@@ -67,6 +70,7 @@ class AboardDispatcher:
         """
         Dispatcher.__init__(self, translate={})
         self.routes = {}
+        self.add_static_route("static", "/static", os.getcwd() + "/static")
     
     def __call__(self, path):
         """Look for a matching route to 'path'."""
@@ -101,5 +105,11 @@ class AboardDispatcher:
             methods=ALL_METHODS):
         """Add a route."""
         route = Route(pattern, controller, callable, methods)
+        self.routes[name] = route
+        return route
+    
+    def add_static_route(self, name, pattern, root_dir):
+        """Add a static route (static content)."""
+        route = StaticRoute(pattern, root_dir)
         self.routes[name] = route
         return route

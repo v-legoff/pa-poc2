@@ -1,8 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html lang="en">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="utf-8" />
     <title>PA-POC2 - <% block title %><% endblock %></title>
 </head>
 <body>

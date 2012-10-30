@@ -134,7 +134,12 @@ class Server:
     def run(self):
         """Run the server."""
         cherrypy.config.update({'server.socket_port': 9000})
-        conf = {'/': {'request.dispatch': self.dispatcher}}
+        conf = {
+            '/': {
+                'request.dispatch': self.dispatcher,
+            },
+        }
+        print(conf)
         cherrypy.tree.mount(root=None, config=conf)
         cherrypy.engine.start()
         cherrypy.engine.block()
