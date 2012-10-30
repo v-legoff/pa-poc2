@@ -44,6 +44,7 @@ from ext.aboard.router.dispatcher import AboardDispatcher
 from ext.aboard.service import Service
 from ext.aboard.service.manager import ServiceManager
 from ext.aboard.templating import Jinja2
+from ext.aboard.websocket import WebsocketServer
 
 class Server:
     
@@ -60,6 +61,7 @@ class Server:
         wiki = self.services.wiki
         self.templating_system = Jinja2(self)
         self.templating_system.setup()
+        self.websocket_server = WebsocketServer()
         
         Controller.server = self
         Formatter.server = self
@@ -85,6 +87,7 @@ class Server:
     
     def prepare(self):
         """Prepare the server."""
+        self.websocket_server.start()
         dc_conf = self.configurations["data_connector"]
         dc_name = dc_conf["dc_name"]
         dc_spec = dict(dc_conf)
