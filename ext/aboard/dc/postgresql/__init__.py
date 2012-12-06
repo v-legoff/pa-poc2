@@ -26,29 +26,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""This package contains the model structure and the data connectors.
+"""Package defining the data connector for PostgreSQL.
 
-A data connector is a class which provides access to a driver (a
-database driver, for instance).  It must follow some compatibility
-rules and the first one is to inherit from the DataConnector class,
-described in the ./connector.py file.
-
-Note that the available data connectors are stored in the 'connectors'
-dictionary, described in this file.  Each data connector should be
-defined in a sub-package.  The DataConnector class, defined in the
-./connector.py file, gives more informations on how to create a
-data connector.
+The data connector (subclass of DataConnector) is described in
+the file ./connector.py .
 
 """
 
-from ext.aboard.dc.mongo import MongoDBConnector
-from ext.aboard.dc.postgresql import PostgreSQLConnector
-from ext.aboard.dc.sqlite3 import Sqlite3Connector
-from ext.aboard.dc.yaml import YAMLConnector
-
-connectors = {
-    "mongo": MongoDBConnector,
-    "postgresql": PostgreSQLConnector,
-    "sqlite3": Sqlite3Connector,
-    "yaml": YAMLConnector,
-}
+from ext.aboard.dc.postgresql.connector import PostgreSQLConnector

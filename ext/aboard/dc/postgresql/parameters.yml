@@ -1,0 +1,14 @@
+# Database hostname or IP address
+host: 127.0.0.1
+
+# Database port
+port: 5432
+
+# User name
+dbuser: postgres
+
+# User password (left blank for no password)
+dbpass: 
+
+# Database name
+dbname: aboard
