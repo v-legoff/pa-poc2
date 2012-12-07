@@ -38,6 +38,22 @@ def install_with_easyinstall(package):
     """Install the specified packages (in dry-run)."""
     easy_install.main(["-U", package])
 
-install_with_easyinstall("http://pyyaml.org/download/pyyaml/PyYAML-3.10.tar.gz")
-install_with_easyinstall("https://bitbucket.org/cherrypy/cherrypy/downloads/CherryPy-3.2.3dev-20121017.tar.gz")
-install_with_easyinstall("http://pypi.python.org/packages/source/J/Jinja2/Jinja2-2.6.tar.gz")
+install_with_easyinstall("http://pyyaml.org/download/pyyaml/" \
+        "PyYAML-3.10.tar.gz")
+install_with_easyinstall("https://bitbucket.org/cherrypy/cherrypy/downloads/" \
+        "CherryPy-3.2.3dev-20121017.tar.gz")
+install_with_easyinstall("http://pypi.python.org/packages/source/" \
+        "J/Jinja2/Jinja2-2.6.tar.gz")
+
+confirm = input(
+    "Do you want to install the Pymongo module for MongoDB [y/n] ? [n] ")
+if confirm.lower() == "y":
+    install_with_easyinstall("http://pypi.python.org/packages/source/p/" \
+            "pymongo/pymongo-2.4.1.tar.gz#md5=be358dece09bc57561573db35bc75eb0")
+
+confirm = input(
+    "Do you want to install the py-postgresql module for PostgreSQL [y/n] ? " \
+    "[n]")
+if confirm.lower() == "y":
+    install_with_easyinstall("http://pypi.python.org/packages/source/p/" \
+            "py-postgresql/py-postgresql-1.1.0.zip")
