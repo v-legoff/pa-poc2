@@ -26,20 +26,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Script to launch the Python Aboard server."""
+"""This script is simply used to extend the Python path.
 
+Any script (in this directory) should import it FIRST if it needs to use the
+Python Aboard packages.
+
+"""
+
+import os
 import sys
 
-sys.path.append("..")
-
-from ext.aboard.server.server import Server
-from ext.aboard.model import Model
-
-server = Server("127.0.0.1", 9000)
-server.load_configurations()
-server.prepare()
-server.load_bundles()
-models = server.models
-Model.data_connector.record_models(models)
-server.run()
-Model.data_connector.loop()
+sys.path.append(os.getcwd() + "/..")
+os.chdir("..")

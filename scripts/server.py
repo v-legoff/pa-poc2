@@ -26,6 +26,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Package containing the server for Python Aboard with Cherrypy."""
+"""Script to launch the Python Aboard server."""
 
-from ext.aboard.server.server import Server
+import path
+
+from ext.aboard.server import Server
+from ext.aboard.model import Model
+
+server = Server("127.0.0.1", 9000)
+server.load_configurations()
+server.prepare()
+server.load_bundles()
+models = server.models
+Model.data_connector.record_models(models)
+server.run()
+Model.data_connector.loop()
