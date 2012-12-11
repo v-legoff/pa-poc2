@@ -63,8 +63,9 @@ class BaseType:
         self.default = default
         
         if default:
-            # Check that the default value is accepted
-            self.accept_value(default)
+            if not callable(default):
+                # Check that the default value is accepted
+                self.accept_value(default)
     
     def __repr__(self):
         return "<field {} ({})>".format(repr(self.field_name), self.nid)

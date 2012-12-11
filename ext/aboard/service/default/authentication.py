@@ -101,7 +101,6 @@ class AuthenticationService(Service):
         """
         remote_addr = request.headers["Remote-Addr"]
         Token = self.server.get_model(self.token_model)
-        token = Token(user=user.id, timestamp=int(time.time()), value=".")
-        token.set_value()
+        token = Token(user=user.id, timestamp=int(time.time()))
         name = "python-aboard-auth"
         self.server.set_cookie(name, token.value, self.time_expire)

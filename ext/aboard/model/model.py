@@ -164,7 +164,9 @@ class Model(metaclass=MetaModel):
                         raise ValueError("the field {} of model {} has no " \
                                 "default value".format(field.field_name,
                                 type(self)))
-                    
+                    elif callable(default):
+                        default = default(self)
+
                     object.__setattr__(self, name, default)
         
         # If named parameters were specified, save the object
