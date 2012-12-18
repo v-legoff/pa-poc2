@@ -200,9 +200,11 @@ class MongoDBConnector(DataConnector):
         self.cache_object(mod_object)
         self.object_ids[name][mod_object] = m_id
     
-    def update_object(self, object, attribute):
+    def update_object(self, object, attribute, old_value):
         """Update an object."""
         self.check_update(object)
+        field = getattr(type(object), attribute)
+        self.update_cache(object, field, old_value)
         name = get_name(type(object))
         m_id = self.object_ids[name][object]
         f_update = dict(object.__dict__)

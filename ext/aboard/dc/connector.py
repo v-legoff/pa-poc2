@@ -56,7 +56,7 @@ class DataConnector:
         get_all_objects(self, model) -- return all model's objects
         find_object(self, model, pkey_values) -- find an object
         add_object(self, object) -- save a new object
-        update_object(self, object, attribute) -- update an object
+        update_object(self, object, attribute, old_value) -- update an object
         remove_object(self, object) -- delete a stored object
     
     In addition, the created or retrieved objects are stored in cache.
@@ -164,7 +164,7 @@ class DataConnector:
         """
         raise NotImplementedError
     
-    def update_object(self, object, attribute):
+    def update_object(self, object, attribute, old_value):
         """Update an object."""
         raise NotImplementedError
     
@@ -208,6 +208,33 @@ class DataConnector:
         if values in cache.keys():
             del cache[values]
             self.deleted_objects.append((name, values))
+    
+    def update_cache(self, object, field, old_value):
+        """This method is called to update the cache for an object.
+        
+        If the field is one of the primary keys, then it should be
+        updated in the cache too.
+        
+        """
+        attr = field.field_name
+        if old_value is None:
+            return
+        
+        if not field.pkey:
+            return
+        
+        pkey = get_pkey_values(object)
+        old_pkey = get_pkey_values(object, {attr: old_value})
+        
+        if len(pkey) == 1:
+            pkey = pkey[0]
+            old_pkey = old_pkey[0]
+        
+        name = get_name(type(object))
+        tree = self.objects_tree[name]
+        if old_pkey in tree:
+            del tree[old_pkey]
+        tree[pkey] = object
     
     def clear_cache(self):
         """Clear the cache."""

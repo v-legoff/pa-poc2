@@ -249,13 +249,15 @@ class PostgreSQLConnector(DataConnector):
         
         self.cache_object(object)
     
-    def update_object(self, object, attribute):
+    def update_object(self, object, attribute, old_value):
         """Update an object."""
         self.check_update(object)
+        field = getattr(type(object), attribute)
+        self.update_cache(object, field, old_value)
         plural_name = get_plural_name(type(object))
         keys = get_pkey_names(type(object))
         params = [getattr(object, attribute)]
-        values = get_pkey_values(object)
+        values = get_pkey_values(object, {attribute: old_value})
         params.extend(values)
         names = [name + "=$" + str(i + 2) for i, name in enumerate(keys)]
         query = "UPDATE " + plural_name + " SET " + attribute + "=$1"

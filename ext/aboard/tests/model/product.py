@@ -26,9 +26,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""This package contains the Model test and examples."""
+from ext.aboard.model import *
 
-from ext.aboard.tests.model.product import Product
-from ext.aboard.tests.model.user import User
-
-models = [Product, User]
+class Product(Model):
+    
+    """A product model."""
+    
+    id = None
+    name = String(pkey=True)
+    price = Integer()
+    quantity = Integer()
+    total_price = Integer(default=lambda product: \
+            product.price * product.quantity)

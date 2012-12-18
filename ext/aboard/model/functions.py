@@ -81,18 +81,31 @@ def get_pkey_names(model):
     p_fields = [field.field_name for field in fields if field.pkey]
     return p_fields
 
-def get_pkey_values(object):
+def get_pkey_values(object, replacement=None):
     """Return a tuple of datas (those defined as primary key).
+    
+    If specified, the replacement should be a dictionary with
+    {name: value} to replace the values of certain attributes.
     
     NOTE: the 'get_pkeys_name' function expects a model as argument
     (a class).  This function, however, expects an object created on a
     Model class.
     
     """
+    if replacement is None:
+        replacement = {}
+    
     fields = get_fields(type(object))
     p_fields = [field.field_name for field in fields if field.pkey]
-    p_fields = [getattr(object, field) for field in p_fields]
-    return tuple(p_fields)
+    values = []
+    for attr in p_fields:
+        if attr in replacement:
+            value = replacement[attr]
+        else:
+            value = getattr(object, attr)
+        values.append(value)
+    
+    return tuple(values)
 
 def update_attr(to_update, attribute, value):
     """Update the object passed as first argument.

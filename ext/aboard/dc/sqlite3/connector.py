@@ -163,6 +163,7 @@ class Sqlite3Connector(DataConnector):
     
     def find_object(self, model, pkey_values):
         """Return, if found, the specified object."""
+        self.connection.commit()
         # First, look for the object in the cached tree
         pkey_values_list = list(pkey_values.values())
         object = self.get_from_cache(model, pkey_values)
@@ -222,12 +223,15 @@ class Sqlite3Connector(DataConnector):
         
         self.cache_object(object)
     
-    def update_object(self, object, attribute):
+    def update_object(self, object, attribute, old_value):
         """Update an object."""
         self.check_update(object)
+        field = getattr(type(object), attribute)
+        self.update_cache(object, field, old_value)
         plural_name = get_plural_name(type(object))
         keys = get_pkey_names(type(object))
-        params = [getattr(object, attribute)] + list(get_pkey_values(object))
+        params = [getattr(object, attribute)]
+        params.extend(get_pkey_values(object, {attribute: old_value}))
         names = [name + "=?" for name in keys]
         query = "UPDATE " + plural_name + " SET " + attribute + "=?"
         query += " WHERE " + " AND ".join(names)

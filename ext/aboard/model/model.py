@@ -191,11 +191,15 @@ class Model(metaclass=MetaModel):
             # Check the value type
             check = field.accept_value(value)
         
+        old_value = getattr(self, attr)
         object.__setattr__(self, attr, value)
+        if isinstance(old_value, BaseType):
+            # Not set yet
+            old_value = None
         
         if Model.data_connector and Model.data_connector.running:
             with Model.data_connector.u_lock:
-                Model.data_connector.update_object(self, attr)
+                Model.data_connector.update_object(self, attr, old_value)
     
     def delete(self):
         """Destroy the created object.

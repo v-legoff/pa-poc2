@@ -170,6 +170,14 @@ class AbstractDCTest:
         
         self.assertEqual(len(uids), len(users))
     
+    def test_update_primary_key(self):
+        """Create and update the primary key of a product."""
+        product = Product(name="a jug of milk", price=2, quantity=1)
+        product.name = "a croissant"
+        self.assertIs(product, Product.find("a croissant"))
+        self.assertRaises(mod_exceptions.ObjectNotFound, Product.find, \
+                "a jug of milk")
+    
     def test_auto_increment(self):
         """Test the good behavior of a autoincrement field.
         
@@ -218,6 +226,11 @@ class AbstractDCTest:
         """Create a user to test the default value of 'password'."""
         user = User(username="Delfin")
         self.assertEqual(user.password, "unknown")
+    
+    def test_callable_default(self):
+        """Create a product to test the default with callable."""
+        product = Product(name="a huge car", price=100000, quantity=3)
+        self.assertEqual(product.total_price, 300000)
     
     def test_find(self):
         """Create and try to find the created user."""

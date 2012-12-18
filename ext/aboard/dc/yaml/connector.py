@@ -229,9 +229,11 @@ class YAMLConnector(DataConnector):
         self.auto_increments[name] = auto_increments
         self.to_update.add(name)
     
-    def update_object(self, object, attribute):
+    def update_object(self, object, attribute, old_value):
         """Update an object."""
         self.check_update(object)
+        field = getattr(type(object), attribute)
+        self.update_cache(object, field, old_value)
         name = get_name(type(object))
         self.to_update.add(name)
     
