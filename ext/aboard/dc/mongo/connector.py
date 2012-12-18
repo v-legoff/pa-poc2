@@ -217,5 +217,5 @@ class MongoDBConnector(DataConnector):
         self.uncache_object(object)
         name = get_name(type(object))
         m_id = self.object_ids[name][object]
-        self.datas[name].remove(m_id, safe=True)
+        self.datas[name].remove(m_id, fsync=True)
         del self.object_ids[name][object]
