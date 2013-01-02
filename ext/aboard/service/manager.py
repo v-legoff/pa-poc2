@@ -26,11 +26,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+"""Module containing the Servicemanager class."""
+
 import os
 
 from ext.aboard.service.default import defaults
-
-"""Module containing the Servicemanager class."""
 
 class ServiceManager:
     

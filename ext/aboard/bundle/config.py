@@ -26,11 +26,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+"""Module containing the Config class, descripbed below."""
+
 import os
 
 import yaml
-
-"""Module containing the Config class, descripbed below."""
 
 class Config:
     
