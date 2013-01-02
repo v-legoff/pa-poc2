@@ -1,4 +1,21 @@
-h1
+#flash
 {
-    color: blue;
+    font-size: 1.2em;
+    color: red;
+}
+em
+{
+    font-style: oblique;
+}
+strong
+{
+    font-weight: bold;
+}
+table
+{
+    border-collapse: collapse;
+}
+td, th
+{
+    border: 1px solid black;
 }
