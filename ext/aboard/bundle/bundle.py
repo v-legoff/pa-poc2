@@ -26,14 +26,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+"""Module containing the Bundle class, defined below."""
+
 import os
 
 import yaml
 
 from ext.aboard.bundle.config import Config
 from ext.aboard.bundle.meta_datas import MetaDatas
-
-"""Module containing the Bundle class, defined below."""
 
 class Bundle:
     
@@ -127,12 +127,11 @@ class Bundle:
             for file_name in os.listdir(path):
                 if not file_name.startswith("__") and \
                         file_name.endswith(".py") and len(file_name) > 3:
-                    file_path = path + "/" + file_name
                     py_file_path = py_path + "." + file_name[:-3]
-                    self.load_controller(file_name[:-3], file_name,
-                            py_file_path, server)
+                    self.load_controller(file_name[:-3], py_file_path,
+                            server)
     
-    def load_controller(self, py_name, path, py_path, server):
+    def load_controller(self, py_name, py_path, server):
         """Load a controller."""
         controller_name = py_name.capitalize()
         load = __import__(py_path)

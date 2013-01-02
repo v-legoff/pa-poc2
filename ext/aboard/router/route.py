@@ -64,6 +64,7 @@ class Route:
     
     """
     
+    format_dependent = False
     def __init__(self, pattern, controller, callable, methods=ALL_METHODS):
         """Create a new route.
         

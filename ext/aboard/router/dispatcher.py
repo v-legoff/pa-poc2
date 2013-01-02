@@ -90,12 +90,18 @@ class AboardDispatcher:
         # Get the path without taking in account the format
         format = path.split(".")[-1].lower()
         if len(format) < len(path):
-            path = path[:-(len(format) + 1)]
+            without_format = path[:-(len(format) + 1)]
         else:
             format = ""
+            without_format = path
         
         for route in self.routes.values():
-            match = route.match(request, path)
+            if route.format_dependent:
+                to_test = path
+            else:
+                to_test = without_format
+            
+            match = route.match(request, to_test)
             if not isinstance(match, bool):
                 return route.callable, match
         

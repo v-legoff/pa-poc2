@@ -42,6 +42,7 @@ class StaticRoute:
     
     """
     
+    format_dependent = True
     def __init__(self, pattern, root_dir):
         """Create a new route.
         
