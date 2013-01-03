@@ -98,7 +98,6 @@ class WikiService(Service):
             and, finally, /this should be in italic/ and *bold*.
             Well, @that *one* again@.
         """
-        print("Convert", self.convert_text(text))
     
     def add_expression(self, name, regexp, replacement, options=0):
         """Add a new regular expression.

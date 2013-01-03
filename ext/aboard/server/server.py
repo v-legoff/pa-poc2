@@ -57,7 +57,6 @@ class Server:
         self.configurations = {}
         self.services = ServiceManager()
         self.services.register_defaults()
-        wiki = self.services.wiki
         self.templating_system = Jinja2(self)
         self.templating_system.setup()
         
@@ -98,7 +97,6 @@ class Server:
         dc = dc()
         dc.setup(**dc_spec)
         Model.data_connector = dc
-        print("Set data connector to", dc_name)
         
         if "formats" not in self.configurations:
             return
@@ -139,7 +137,6 @@ class Server:
                 'request.dispatch': self.dispatcher,
             },
         }
-        print(conf)
         cherrypy.tree.mount(root=None, config=conf)
         cherrypy.engine.start()
         cherrypy.engine.block()

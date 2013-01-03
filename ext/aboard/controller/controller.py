@@ -108,7 +108,7 @@ class Controller:
         def callable_wrapper(controller, *args, **kwargs):
             """Wrapper of the controller."""
             if controller.server.authenticated():
-                return function(controller, *c_args, **kwargs)
+                return function(controller, *args, **kwargs)
             
             return "You are not logged in."
         return callable_wrapper

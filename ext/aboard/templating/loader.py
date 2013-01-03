@@ -65,7 +65,6 @@ class PAFileSystemLoader(BaseLoader):
         else:
             path = template
         
-        print(path)
         if not exists(path):
             raise TemplateNotFound(template)
         

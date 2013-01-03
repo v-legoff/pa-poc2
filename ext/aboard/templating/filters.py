@@ -56,7 +56,6 @@ class TemplateFilters:
             if name.startswith("_"):
                 continue
             
-            print("filter", name)
             filters[name] = function
         
         self.server = server

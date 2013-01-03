@@ -110,7 +110,8 @@ class PostgreSQLConnector(DataConnector):
         self.db_name = dbname
         self.db_user = dbuser
         self.db_pass = dbpass
-        self.connection = postgresql.open("pq://{user}:{password}@{host}:{port}/{database}".format(
+        self.connection = postgresql.open(
+                "pq://{user}:{password}@{host}:{port}/{database}".format(
                 user=dbuser, password=dbpass, host=host, port=port,
                 database=dbname))
     

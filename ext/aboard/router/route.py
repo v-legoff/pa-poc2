@@ -146,5 +146,4 @@ class Route:
         
         re_pattern = "^" + re_pattern + "$"
         self.py_pattern = py_pattern
-        print("py", py_pattern)
         return re.compile(re_pattern)

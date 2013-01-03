@@ -170,10 +170,8 @@ class Bundle:
         """Load the bundle services."""
         path = "bundles/" + self.name + "/services"
         py_path = "bundles." + self.name + ".services"
-        print(path, os.path.exists(path))
         if os.path.exists(path):
             for file_name in os.listdir(path):
-                print(file_name)
                 if not file_name.startswith("__") and \
                         file_name.endswith(".py") and len(file_name) > 3:
                     file_path = path + "/" + file_name
@@ -189,5 +187,4 @@ class Bundle:
             load = getattr(load, node)
         
         service = getattr(load, service_name)
-        print("service", py_name)
         server.services.register(py_name, service)

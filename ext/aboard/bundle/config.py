@@ -50,7 +50,6 @@ class Config:
                 if file_name.endswith(".yml") and len(file_name) > 4:
                     file_path = path + "/" + file_name
                     with open(file_path, "r") as file:
-                        print("Reading configuration file", file_path)
                         configuration = yaml.load(file)
                         self.configurations[file_name[:-4]] = configuration
     
