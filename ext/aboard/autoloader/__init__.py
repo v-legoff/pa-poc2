@@ -26,45 +26,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Module containing the abstract Plugin class."""
+"""Package of the Python Aboard autoloader.
 
-class Plugin:
-    
-    """Parent class for all plugins.
-    
-    To create a plugin, a user must inherit from this class.  A
-    plugin is a set of code which is designed to extend the abilities
-    of the Python Aboard framework, by using other libraries for
-    instance.
-    
-    In order to modify the behaviour of Python Aboard, a plugin uses
-    events:  it can subscribe to listen and be called when a specific
-    action occurs.  For instance, a plugin could be called any time
-    a request is sent to the server.
-    
-    The 'subscribe_to' class attribute is a tuple containing the names
-    of the events to which this plugin is subscribed.  When the event
-    occurs, Python Aboard automatically calls each plugin subscribed
-    to this event and use the event's name as a method.  If, for
-    instance, a plugin is subscribed to the 'extend_server_configuration'
-    event, it should have a 'extend_server_configuration' class
-    method defined.
-    
-    """
-    
-    manager = None
-    subscribe_to = ()
-    
-    @classmethod
-    def subscribe(cls):
-        """Subscribe the plugin.
-        
-        This method is called when the plugin is loaded by the plugin
-        manager.  It should not be defined in a inherited class.
-        
-        """
-        if cls.manager is None:
-            raise ValueError("try to subscribe a plugin without manager")
-        
-        for event_name in cls.subscribe_to:
-            cls.manager.subscribe(cls, event_name)
+The autoloader's goal is to automatically import certain packages
+or modules and retrieve (mostly) user configuration in Python classes.
+The models, the controllers, the services, the plugins are Python
+files created by users and the autoloader is needed to automatically
+import them.
+
+"""
+
+from ext.aboard.plugin.loader import AutoLoader

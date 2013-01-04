@@ -76,4 +76,3 @@ class PluginManager:
         for plugin in subscribed:
             method = getattr(plugin, event)
             method(*args, **kwargs)
-
