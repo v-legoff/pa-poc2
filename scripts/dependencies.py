@@ -32,7 +32,16 @@ You should run it as root.
 
 """
 
-from setuptools.command import easy_install
+try:
+    from setuptools.command import easy_install
+except ImportError:
+    print("setuptools couldn't be imported, maybe it's not installed yet.")
+    print("Try to install setuptools with the distribute_setup.py script.")
+    from distribute_setup import use_setuptools
+    use_setuptools()
+    from setuptools.command import easy_install
+else:
+    print("setuptools is installed. Install dependencies...")
 
 def install_with_easyinstall(package):
     """Install the specified packages (in dry-run)."""
