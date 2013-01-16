@@ -61,31 +61,26 @@ class AuthenticationService(Service):
         """Return whether the request is an identified user."""
         value = self.server.get_cookie("python-aboard-auth")
         if not value:
-            print("no stored")
             return False
         
         try:
             Token = self.server.get_model(self.token_model)
         except KeyError:
-            print("Can not find the token model.")
             return False
         
         try:
             token = Token.find(value=value)
         except ObjectNotFound:
-            print("Token not found")
             return False
         
         try:
             User = self.server.get_model(self.user_model)
         except KeyError:
-            print("Can not find the user model.")
             return False
         
         try:
             user = User.find(token.user)
         except ObjectNotFound:
-            print("user not found")
             return False
         
         return True

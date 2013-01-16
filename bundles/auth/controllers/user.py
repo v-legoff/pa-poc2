@@ -5,7 +5,6 @@ class User(Controller):
     
     def list(self):
         """Return the list of users."""
-        print(self.server.services.authentication.authenticated(self.request))
         return self.render("auth.user.list", users=ModUser.get_all())
     
     @Controller.model_id("auth.User")
