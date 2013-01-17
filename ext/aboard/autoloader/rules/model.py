@@ -26,29 +26,36 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Package containing the autoloader rules.
+"""Module containing the ModelRule class."""
 
-A rule is a sub-class of Rule, defined in the base module.
-Each rule defines some default behaviour when a module is loaded
-or reloaded.
+from ext.aboard.autoloader.rules.base import Rule
 
-For instance, when a module containing a Controller is loaded / reloaded:
-    The Controller class should be extracted ffrom the module
-    The previously selected class should be instanciated
-    The controller should be bound with a bundle
-    Finally, it should know what is the running server.
-
-This behavior is defined in a sub-class of Rule and is exactly the same whether the
-module is loaded the first time or reloaded to upgrade the source code.
-
-The default rules are contained in the DEFAULT dictionary.  If you want
-to add a new rule, create its module in this package and import it in
-here.  Don't forget to add it in the DEFAULT dictionary as well.
-
-"""
-
-from ext.aboard.autoloader.rules.model import ModelRule
-
-DEFAULT = {
-    "model": ModelRule,
-}
+class ModelRule(Rule):
+    
+    """Class defining the autoloader rule to import models.
+    
+    The models are module containing a class.  This class will be
+    returned after importing the module, but the data_connector
+    class attribute of this newly imported class should be set,
+    as well.
+    
+    """
+    
+    def __init__(self, data_connector):
+        self.data_connector = data_connector
+    
+    def load(self, module):
+        """Load a specific module.
+        
+        This method:
+            Gets the Model class defined in the module
+            Set the data_connector class attribute of this class
+            Return the class
+        
+        """
+        # Use the __name__ attribute to get the module's name
+        name = module.__name__.split(".")[-1]
+        class_name = name.capitalize()
+        mod_class = getattr(module, class_name)
+        mod_class.data_connector = self.data_connector
+        return mod_class

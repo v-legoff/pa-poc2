@@ -26,29 +26,39 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Package containing the autoloader rules.
+"""Module containing the base class Rule."""
 
-A rule is a sub-class of Rule, defined in the base module.
-Each rule defines some default behaviour when a module is loaded
-or reloaded.
-
-For instance, when a module containing a Controller is loaded / reloaded:
-    The Controller class should be extracted ffrom the module
-    The previously selected class should be instanciated
-    The controller should be bound with a bundle
-    Finally, it should know what is the running server.
-
-This behavior is defined in a sub-class of Rule and is exactly the same whether the
-module is loaded the first time or reloaded to upgrade the source code.
-
-The default rules are contained in the DEFAULT dictionary.  If you want
-to add a new rule, create its module in this package and import it in
-here.  Don't forget to add it in the DEFAULT dictionary as well.
-
-"""
-
-from ext.aboard.autoloader.rules.model import ModelRule
-
-DEFAULT = {
-    "model": ModelRule,
-}
+class Rule:
+    
+    """This is an astract class, rules should inherit from it.
+    
+    Any rule could need some specific informations in the constructor.
+    For instance, the ModelRule will need the DataConnector object to
+    communicate with the data connector, retrieve and store datas.  Those
+    needs are different from rule to rule, though, and the autoloader
+    deduces each rule's needed parameters by inspecting its
+    constructor.
+    
+    Some other methods are used to load or reload modules with this rule:
+        load -- load a specific module
+        unload -- unload a specific module
+    
+    """
+    
+    def load(self, module):
+        """Load a specific module.
+        
+        This method should return what is needed after this import.
+        Perhaps the module itself, but more likely something contained
+        in it.
+        
+        """
+        raise NotImplementedError
+    
+    def unload(self, module):
+        """Unload the specific module.
+        
+        By default, nothing is done.
+        
+        """
+        pass

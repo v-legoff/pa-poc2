@@ -34,6 +34,7 @@ import os
 import cherrypy
 import yaml
 
+from ext.aboard.autoloader import AutoLoader
 from ext.aboard.bundle import Bundle
 from ext.aboard.controller import Controller
 from ext.aboard.dc import connectors
@@ -53,6 +54,7 @@ class Server:
         self.host = host
         self.port = port
         self.dispatcher = AboardDispatcher()
+        self.loader = AutoLoader(self)
         self.bundles = {}
         self.configurations = {}
         self.services = ServiceManager()
@@ -115,8 +117,10 @@ class Server:
             
             allowed_formats.append(format)
         
+        self.data_connector = dc
         self.default_format = default
         self.allowed_formats = allowed_formats
+        self.loader.add_default_rules()
     
     def load_bundles(self):
         """Load the user's bundles."""
@@ -127,7 +131,7 @@ class Server:
                 self.bundles[name] = bundle
         
         for bundle in self.bundles.values():
-            bundle.setup(self)
+            bundle.setup(self, self.loader)
     
     def run(self):
         """Run the server."""

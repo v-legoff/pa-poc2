@@ -64,7 +64,7 @@ class Bundle:
         self.views = {}
         self.config = None
     
-    def setup(self, server):
+    def setup(self, server, loader):
         """Setup the bundle following the setup process.
         
         Note that the bundles dictionary is passed to the setup method.  It
@@ -94,7 +94,7 @@ class Bundle:
                 return False
         
         self.load_controllers(server)
-        self.load_models(server)
+        self.load_models(loader)
         self.load_services(server)
         self.config = Config(self.name)
         cfg_setup = self.config.setup(server)
@@ -143,7 +143,7 @@ class Bundle:
         controller.server = server
         self.controllers[controller_name] = controller
     
-    def load_models(self, server):
+    def load_models(self, loader):
         """Load the bundle models."""
         path = "bundles/" + self.name + "/models"
         py_path = "bundles." + self.name + ".models"
@@ -151,10 +151,9 @@ class Bundle:
             for file_name in os.listdir(path):
                 if not file_name.startswith("__") and \
                         file_name.endswith(".py") and len(file_name) > 3:
-                    file_path = path + "/" + file_name
                     py_file_path = py_path + "." + file_name[:-3]
-                    self.load_model(file_name[:-3], file_name,
-                            py_file_path, server)
+                    model = loader.load_module("model", py_file_path)
+                    self.models[model.__name__] = model
     
     def load_model(self, py_name, path, py_path, server):
         """Load a model."""

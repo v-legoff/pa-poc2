@@ -29,7 +29,10 @@
 """Module containing the AutoLoader class."""
 
 from imp import reload
+import inspect
 import importlib
+
+from ext.aboard.autoloader.rules import DEFAULT
 
 class AutoLoader:
     
@@ -48,7 +51,8 @@ class AutoLoader:
     
     """
     
-    def __init__(self):
+    def __init__(self, server):
+        self.server = server
         self.loaded_modules = {}
         self.rules = {}
     
@@ -57,9 +61,10 @@ class AutoLoader:
         
         Expected arguments:
             name -- the name of the rule, shouldn't be used
-            rule -- the class containing the rule behaviour.
+            rule -- the Rule object containing the rule behavior
         
-        A rule is a class inherited from Rule (see the rule package).
+        A rule is a object whose class has inherited from Rule (see the
+        rule package).
         
         """
         if name in self.rules:
@@ -67,21 +72,51 @@ class AutoLoader:
         
         self.rules[name] = rule
     
-    def add_default_rules(self):
-        """Add the default rules."""
-        for name, rule in DEFAULT.items():
-            self.add_rule(name, rule)
+    def add_default_rule(self, name, rule):
+        """Add a default rule.
+        
+        This method is automatically called by 'add_default_rules.  It
+        is used to get the needed parameters to build the rule and call
+        the 'add_rule' method with the newly created rule.
+        
+        """
+        # Get the needed parameters
+        parameters = dict(inspect.signature(rule).parameters)
+        for p_name in list(parameters.keys()):
+            if p_name not in self.parameters:
+                raise ValueError("the {} parameter can not be found in " \
+                        "the autoloader".format(repr(p_name)))
+            
+            parameters[p_name] = self.parameters[p_name]
+        
+        # We build the rule with the parameters
+        rule = rule(**parameters)
+        self.add_rule(name, rule)
     
-    def load_module(self, rule, path, attribute):
+    def add_default_rules(self):
+        """Add the default rules defined in the DEFAULT dictionary.
+        
+        This method should be called by the server before any autoload.
+        It adds the default rules automatically.
+        
+        """
+        self.parameters = {
+            'data_connector': self.server.data_connector,
+        }
+        
+        for name, rule in DEFAULT.items():
+            self.add_default_rule(name, rule)
+    
+    def load_module(self, rule, path):
         """Load a specific module dynamically.
         
         Expected arguments:
             rule -- the rule's name
             path -- the Python path to the module (package.subpackage.module)
-            attribute -- the attribute to get from the module.
         
-        If attribute is empty, then the whole module is returned.
-        Otherwise, the value of the module's attribute is returned.
+        The rule determine how the specified module be imported but mostly
+        what information should be loaded from it.  Most modules
+        are loaded and a class contained in it is returned.
         
         """
         if rule not in self.rules:
@@ -89,13 +124,8 @@ class AutoLoader:
         
         rule_name = rule
         rule = self.rules[rule_name]
-        module = importlib.import(path)
-        rule.load(module)
-        if attribute:
-            ret = getattr(module, attribute)
-        else:
-            ret = module
-        
+        module = importlib.import_module(path)
+        ret = rule.load(module)
         self.loaded_modules[path] = module
         return ret
     
@@ -106,4 +136,5 @@ class AutoLoader:
         autoloader.
         
         """
-        
+        # Here, it depends of Cherrypy, not implemented yet
+        pass

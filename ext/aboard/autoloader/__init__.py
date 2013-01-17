@@ -36,4 +36,4 @@ import them.
 
 """
 
-from ext.aboard.plugin.loader import AutoLoader
+from ext.aboard.autoloader.loader import AutoLoader
