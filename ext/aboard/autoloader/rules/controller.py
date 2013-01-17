@@ -26,59 +26,45 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Module containing the base class Rule."""
+"""Module containing the ControllerRule class."""
 
-class Rule:
+from ext.aboard.autoloader.rules.base import Rule
+
+class ControllerRule(Rule):
     
-    """This is an astract class, rules should inherit from it.
+    """Class defining the autoloader rule to import controllers.
     
-    Any rule could need some specific informations in the constructor.
-    For instance, the ModelRule will need the DataConnector object to
-    communicate with the data connector, retrieve and store datas.  Those
-    needs are different from rule to rule, though, and the autoloader
-    deduces each rule's needed parameters by inspecting its
-    constructor.
-    
-    Some other methods are used to load or reload modules with this rule:
-        load -- load a specific module
-        unload -- unload a specific module
+    The controllers are module containing a class.  When a module
+    containing a Controller is loaded, the class is instanciated
+    and the server instance attribute is set.  The ControllerRule
+    automatically register this controller (the instanciated object)
+    in the bundle's controllers.
     
     """
     
-    @staticmethod
-    def module_name(module):
-        """Return the module name.
-        
-        We use the __name__ attribute of the module, but we
-        select only the last one of the path.
-        
-        """
-        return module.__name__.split(".")[-1]
-    
-    @staticmethod
-    def bundle_name(module):
-        """Return the bundle name.
-        
-        The first part of the path should be "bundles".  The next
-        part is the bundle's name.
-        
-        """
-        return module.__name__.split(".")[1]
+    def __init__(self, server):
+        self.server = server
     
     def load(self, module):
         """Load a specific module.
         
-        This method should return what is needed after this import.
-        Perhaps the module itself, but more likely something contained
-        in it.
+        This method:
+            Get the Controller class defined in the module
+            Get the controller's bundle
+            Instanciate the Controller class
+            Set the server instance attribute
+            Write the newly created object in the bundle's controllers
+            Return the object
         
         """
-        raise NotImplementedError
-    
-    def unload(self, module):
-        """Unload the specific module.
+        bundle_name = Rule.bundle_name(module)
+        bundle = self.server.bundles[bundle_name]
+        name = Rule.module_name(module)
+        class_name = name.capitalize()
+        ctl_class = getattr(module, class_name)
+        ctl_object = ctl_class(bundle)
+        ctl_object.server = self.server
         
-        By default, nothing is done.
-        
-        """
-        pass
+        # Write the object in the bundle
+        bundle.controllers[class_name] = ctl_object
+        return ctl_object

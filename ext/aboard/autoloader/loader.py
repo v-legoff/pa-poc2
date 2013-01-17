@@ -31,6 +31,7 @@
 from imp import reload
 import inspect
 import importlib
+import os
 
 from ext.aboard.autoloader.rules import DEFAULT
 
@@ -101,40 +102,69 @@ class AutoLoader:
         
         """
         self.parameters = {
+            'server': self.server,
             'data_connector': self.server.data_connector,
         }
         
         for name, rule in DEFAULT.items():
             self.add_default_rule(name, rule)
     
-    def load_module(self, rule, path):
+    def load_module(self, rule, pypath):
         """Load a specific module dynamically.
         
         Expected arguments:
             rule -- the rule's name
-            path -- the Python path to the module (package.subpackage.module)
+            pypath -- the Python path to the module (package.subpackage.module)
         
         The rule determine how the specified module be imported but mostly
         what information should be loaded from it.  Most modules
         are loaded and a class contained in it is returned.
         
         """
+        path = pypath.replace(".", os.sep)
         if rule not in self.rules:
             raise ValueError("the rule {} is not defined.".format(rule))
         
         rule_name = rule
         rule = self.rules[rule_name]
-        module = importlib.import_module(path)
+        module = importlib.import_module(pypath)
         ret = rule.load(module)
-        self.loaded_modules[path] = module
+        self.loaded_modules[path] = (module, rule_name)
         return ret
     
     def reload_module(self, path):
         """Reload the module to integrate changes.
         
-        The module should have been previously imported by the
-        autoloader.
+        If the module was not imported, do nothing.
         
         """
-        # Here, it depends of Cherrypy, not implemented yet
-        pass
+        if path in self.loaded_modules:
+            module, rule_name = self.loaded_modules[path]
+            rule = self.rules[rule_name]
+            n_module = reload(module)
+            ret = rule.load(n_module)
+            self.loaded_modules[path] = (n_module, rule_name)
+            print("Reloaded", n_module)
+            return ret
+        else:
+            print("Didn't find", path, self.loaded_modules.keys())
+    
+    def load_modules(self, rule, pypath):
+        """Load a set of modules based on the pypath.
+        
+        This method is useful to automatically load a set of
+        modules, for instance every models of a specified
+        bundle.
+        
+        The pypath is used to deduce the FS path (we replace
+        periods by os.path).
+        
+        """
+        fs_path = pypath.replace(".", os.sep)
+        if os.path.exists(fs_path) and os.path.isdir(fs_path):
+            for filename in os.listdir(fs_path):
+                if filename.startswith("_") or not filename.endswith(".py"):
+                    continue
+                
+                pyfile = filename[:-3]
+                self.load_module(rule, pypath + "." + pyfile)

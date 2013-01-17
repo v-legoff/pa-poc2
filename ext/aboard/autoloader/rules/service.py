@@ -26,59 +26,36 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Module containing the base class Rule."""
+"""Module containing the ServiceRule class."""
 
-class Rule:
+from ext.aboard.autoloader.rules.base import Rule
+
+class ServiceRule(Rule):
     
-    """This is an astract class, rules should inherit from it.
+    """Class defining the autoloader rule to import services.
     
-    Any rule could need some specific informations in the constructor.
-    For instance, the ModelRule will need the DataConnector object to
-    communicate with the data connector, retrieve and store datas.  Those
-    needs are different from rule to rule, though, and the autoloader
-    deduces each rule's needed parameters by inspecting its
-    constructor.
-    
-    Some other methods are used to load or reload modules with this rule:
-        load -- load a specific module
-        unload -- unload a specific module
+    The services are modules containing a class.  This class is
+    simply registered into the server's services.
     
     """
     
-    @staticmethod
-    def module_name(module):
-        """Return the module name.
-        
-        We use the __name__ attribute of the module, but we
-        select only the last one of the path.
-        
-        """
-        return module.__name__.split(".")[-1]
-    
-    @staticmethod
-    def bundle_name(module):
-        """Return the bundle name.
-        
-        The first part of the path should be "bundles".  The next
-        part is the bundle's name.
-        
-        """
-        return module.__name__.split(".")[1]
+    def __init__(self, server):
+        self.server = server
     
     def load(self, module):
         """Load a specific module.
         
-        This method should return what is needed after this import.
-        Perhaps the module itself, but more likely something contained
-        in it.
+        This method:
+            Get the Service class defined in the module
+            Register this class in the server's services
+            Return the class
         
         """
-        raise NotImplementedError
-    
-    def unload(self, module):
-        """Unload the specific module.
+        name = Rule.module_name(module)
+        class_name = name.capitalize()
+        svc_class = getattr(module, class_name)
+
         
-        By default, nothing is done.
-        
-        """
-        pass
+        # Register the service in the server
+        self.server.services.register(class_name, svc_class)
+        return svc_class

@@ -26,42 +26,4 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Module containing the ModelRule class."""
-
-from ext.aboard.autoloader.rules.base import Rule
-
-class ModelRule(Rule):
-    
-    """Class defining the autoloader rule to import models.
-    
-    The models are module containing a class.  This class will be
-    returned after importing the module, but the data_connector
-    class attribute of this newly imported class should be set,
-    as well.
-    Plus, the model should register itself in the proper bundle.
-    
-    """
-    
-    def __init__(self, server, data_connector):
-        self.server = server
-        self.data_connector = data_connector
-    
-    def load(self, module):
-        """Load a specific module.
-        
-        This method:
-            Get the Model class defined in the module
-            Set the data_connector class attribute of this class
-            Write this dclass in the model's bundle
-            Return the class
-        
-        """
-        name = Rule.module_name(module)
-        class_name = name.capitalize()
-        mod_class = getattr(module, class_name)
-        mod_class.data_connector = self.data_connector
-        
-        # Write the class in the bundles
-        bundle_name = Rule.bundle_name(module)
-        self.server.bundles[bundle_name].models[class_name] = mod_class
-        return mod_class
+"""Package containing the server's plugins (Cherrypy plugins)."""

@@ -47,8 +47,12 @@ here.  Don't forget to add it in the DEFAULT dictionary as well.
 
 """
 
+from ext.aboard.autoloader.rules.controller import ControllerRule
 from ext.aboard.autoloader.rules.model import ModelRule
+from ext.aboard.autoloader.rules.service import ServiceRule
 
 DEFAULT = {
+    "controller": ControllerRule,
     "model": ModelRule,
+    "service": ServiceRule,
 }

@@ -42,6 +42,7 @@ from ext.aboard.formatters import formats
 from ext.aboard.formatters.base import Formatter
 from ext.aboard.model import Model
 from ext.aboard.router.dispatcher import AboardDispatcher
+from ext.aboard.server.plugins.reloader import Reloader
 from ext.aboard.service import Service
 from ext.aboard.service.manager import ServiceManager
 from ext.aboard.templating import Jinja2
@@ -135,6 +136,10 @@ class Server:
     
     def run(self):
         """Run the server."""
+        cherrypy.engine.autoreload.unsubscribe()
+        cherrypy.engine.reloader = Reloader(cherrypy.engine)
+        cherrypy.engine.reloader.loader = self.loader
+        cherrypy.engine.reloader.subscribe()
         cherrypy.config.update({'server.socket_port': 9000})
         conf = {
             '/': {

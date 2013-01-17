@@ -93,9 +93,10 @@ class Bundle:
                         self.name, requirement))
                 return False
         
-        self.load_controllers(server)
-        self.load_models(loader)
-        self.load_services(server)
+        loader.load_modules("controller", \
+                "bundles." + self.name + ".controllers")
+        loader.load_modules("model", "bundles." + self.name + ".models")
+        loader.load_modules("service", "bundles." + self.name + ".services")
         self.config = Config(self.name)
         cfg_setup = self.config.setup(server)
         if not cfg_setup:
@@ -118,72 +119,3 @@ class Bundle:
             meta_dict = yaml.load(meta_file)
         
         return MetaDatas(self.name, meta_dict)
-    
-    def load_controllers(self, server):
-        """Load the bundle controllers."""
-        path = "bundles/" + self.name + "/controllers"
-        py_path = "bundles." + self.name + ".controllers"
-        if os.path.exists(path):
-            for file_name in os.listdir(path):
-                if not file_name.startswith("__") and \
-                        file_name.endswith(".py") and len(file_name) > 3:
-                    py_file_path = py_path + "." + file_name[:-3]
-                    self.load_controller(file_name[:-3], py_file_path,
-                            server)
-    
-    def load_controller(self, py_name, py_path, server):
-        """Load a controller."""
-        controller_name = py_name.capitalize()
-        load = __import__(py_path)
-        for node in py_path.split(".")[1:]:
-            load = getattr(load, node)
-        
-        controller = getattr(load, controller_name)
-        controller = controller(self)
-        controller.server = server
-        self.controllers[controller_name] = controller
-    
-    def load_models(self, loader):
-        """Load the bundle models."""
-        path = "bundles/" + self.name + "/models"
-        py_path = "bundles." + self.name + ".models"
-        if os.path.exists(path):
-            for file_name in os.listdir(path):
-                if not file_name.startswith("__") and \
-                        file_name.endswith(".py") and len(file_name) > 3:
-                    py_file_path = py_path + "." + file_name[:-3]
-                    model = loader.load_module("model", py_file_path)
-                    self.models[model.__name__] = model
-    
-    def load_model(self, py_name, path, py_path, server):
-        """Load a model."""
-        model_name = py_name.capitalize()
-        load = __import__(py_path)
-        for node in py_path.split(".")[1:]:
-            load = getattr(load, node)
-        
-        model = getattr(load, model_name)
-        self.models[model_name] = model
-    
-    def load_services(self, server):
-        """Load the bundle services."""
-        path = "bundles/" + self.name + "/services"
-        py_path = "bundles." + self.name + ".services"
-        if os.path.exists(path):
-            for file_name in os.listdir(path):
-                if not file_name.startswith("__") and \
-                        file_name.endswith(".py") and len(file_name) > 3:
-                    file_path = path + "/" + file_name
-                    py_file_path = py_path + "." + file_name[:-3]
-                    self.load_service(file_name[:-3], file_name,
-                            py_file_path, server)
-    
-    def load_service(self, py_name, path, py_path, server):
-        """Load a service."""
-        service_name = py_name.capitalize()
-        load = __import__(py_path)
-        for node in py_path.split(".")[1:]:
-            load = getattr(load, node)
-        
-        service = getattr(load, service_name)
-        server.services.register(py_name, service)
