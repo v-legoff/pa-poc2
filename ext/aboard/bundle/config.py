@@ -72,6 +72,6 @@ class Config:
             # Try to find the controller
             location = informations["controller"]
             bundle_name, controller_name, action_name = location.split(".")
-            methods = informations.get("method", ())
+            methods = informations.get("method")
             self.routes[name] = (pattern, controller_name, action_name,
                     methods)

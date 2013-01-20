@@ -30,7 +30,7 @@ class User(Controller):
     @Controller.model_id("auth.User")
     def edit(self, user):
         user = user.display_representation(["id", "username"])
-        return self.render("auth.user.update", user=user)
+        return self.render("auth.user.edit", user=user)
     
     @Controller.model_id("auth.User")
     def update(self, user, username=None, password=None):

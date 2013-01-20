@@ -75,7 +75,7 @@ class ControllerRule(Rule):
         for route, (pattern, ctl_name, action, methods) in routes:
             action = getattr(ctl_object, action)
             self.server.dispatcher.add_route(route, pattern, ctl_object, \
-                    action)
+                    action, methods)
         
         return ctl_object
     

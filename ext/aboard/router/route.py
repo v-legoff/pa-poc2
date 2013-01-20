@@ -65,14 +65,18 @@ class Route:
     """
     
     format_dependent = False
-    def __init__(self, pattern, controller, callable, methods=ALL_METHODS):
+    def __init__(self, pattern, controller, callable, methods=None):
         """Create a new route.
         
         Expected parameters:
             pattern -- the pattern representing the match [1]
+            controller -- the controller (Controller object)
             callable -- the callable which will be called if the route matches
+            methods -- a list of valid method for this route
         
-        [1] The pattern is not a regular expression but...
+        [1] The pattern is not a regular expression but a
+            Python-format-style string, converted into a regular expression
+            by the convert_pattern_to_re method.
         
         """
         if pattern.endswith("/"):
@@ -83,7 +87,10 @@ class Route:
         self.callable = callable
         if isinstance(methods, str):
             methods = [methods]
-        self.methods = tuple(meth_name.upper() for meth_name in methods)
+        if methods:
+            methods = tuple(name.upper() for name in methods)
+        
+        self.methods = methods
         self.patterns = []
         self.py_pattern = ""
         self.re_pattern = self.convert_pattern_to_re(pattern)
@@ -94,7 +101,7 @@ class Route:
     
     def match(self, request, path):
         """Return whether or not thie path is matched by the route."""
-        if request.method.upper() not in self.methods:
+        if self.methods and request.method.upper() not in self.methods:
             return False
         
         match = self.re_pattern.search(path)

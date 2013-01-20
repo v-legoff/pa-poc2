@@ -33,7 +33,7 @@ import os
 import cherrypy
 Dispatcher = cherrypy.dispatch.Dispatcher
 
-from ext.aboard.router.route import Route, ALL_METHODS
+from ext.aboard.router.route import Route
 from ext.aboard.router.static import StaticRoute
 
 class AboardDispatcher:
@@ -108,7 +108,7 @@ class AboardDispatcher:
         return None, []
     
     def add_route(self, name, pattern, controller, callable,
-            methods=ALL_METHODS):
+            methods=None):
         """Add a route."""
         route = Route(pattern, controller, callable, methods)
         self.routes[name] = route
