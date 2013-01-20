@@ -44,6 +44,7 @@ class Config:
     def __init__(self, bundle_name):
         """Construct the configuration."""
         self.configurations = {}
+        self.routes = {}
         path = "bundles/" + bundle_name + "/config"
         if os.path.exists(path):
             for file_name in os.listdir(path):
@@ -71,14 +72,6 @@ class Config:
             # Try to find the controller
             location = informations["controller"]
             bundle_name, controller_name, action_name = location.split(".")
-            bundle = server.bundles[bundle_name]
-            controller = bundle.controllers[controller_name]
-            action = getattr(controller, action_name)
-            methods = informations.get("method")
-            
-            params = []
-            if methods:
-                params = [methods]
-            
-            server.dispatcher.add_route(name, pattern, controller,
-                    action, *params)
+            methods = informations.get("method", ())
+            self.routes[name] = (pattern, controller_name, action_name,
+                    methods)

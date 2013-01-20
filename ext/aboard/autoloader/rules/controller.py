@@ -67,4 +67,25 @@ class ControllerRule(Rule):
         
         # Write the object in the bundle
         bundle.controllers[class_name] = ctl_object
+        
+        # Add the controller's routes
+        routes = tuple(bundle.config.routes.items())
+        routes = [(name, infos) for name, infos in routes if infos[1] == \
+                class_name]
+        for route, (pattern, ctl_name, action, methods) in routes:
+            action = getattr(ctl_object, action)
+            self.server.dispatcher.add_route(route, pattern, ctl_object, \
+                    action)
+        
         return ctl_object
+    
+    def unload(self, module):
+        """Unload th emodule containing the controllers.
+        
+        Delete all the routes connected with this controller.
+        
+        """
+        name = Rule.module_name(module)
+        class_name = name.capitalize()
+        ctl_class = getattr(module, class_name)
+        self.server.dispatcher.delete_routes_for_controller(ctl_class)

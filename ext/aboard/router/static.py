@@ -53,6 +53,7 @@ class StaticRoute:
         """
         Route.__init__(self, pattern, None, cherrypy.lib.static.serve_file)
         self.root_dir = root_dir
+        self.controller = None #  this route type doesn't have controllers
     
     def __repr__(self):
         return "<StaticRoute to {} -> {})>".format(

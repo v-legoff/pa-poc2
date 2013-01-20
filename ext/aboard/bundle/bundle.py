@@ -93,15 +93,17 @@ class Bundle:
                         self.name, requirement))
                 return False
         
-        loader.load_modules("controller", \
-                "bundles." + self.name + ".controllers")
-        loader.load_modules("model", "bundles." + self.name + ".models")
-        loader.load_modules("service", "bundles." + self.name + ".services")
+        # Load the bundle's configuration
         self.config = Config(self.name)
         cfg_setup = self.config.setup(server)
         if not cfg_setup:
             return False
         
+        # Load (with the autoloader) the Python modules
+        loader.load_modules("controller", \
+                "bundles." + self.name + ".controllers")
+        loader.load_modules("model", "bundles." + self.name + ".models")
+        loader.load_modules("service", "bundles." + self.name + ".services")
         return True
     
     def read_meta_datas(self):

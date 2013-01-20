@@ -119,3 +119,13 @@ class AboardDispatcher:
         route = StaticRoute(pattern, root_dir)
         self.routes[name] = route
         return route
+    
+    def delete_routes_for_controller(self, controller):
+        """Delete all the routes connected with this controller.
+        
+        The controller should be a class, not a Controller object.
+        
+        """
+        for name, route in tuple(self.routes.items()):
+            if isinstance(route.controller, controller):
+                del self.routes[name]

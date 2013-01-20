@@ -73,7 +73,8 @@ class Reloader(Autoreloader):
                 else:
                     if mtime is None or mtime > oldtime:
                         # The file has been deleted or modified.
-                        self.bus.log("Doing nothing but %s changed." % filename)
+                        self.bus.log("The module {} changed, try to reload "
+                                "it.".format(filename))
                         path = os.path.relpath(filename)[:-3]
                         self.loader.reload_module(path)
                         if mtime:
