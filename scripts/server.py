@@ -37,7 +37,5 @@ server = Server("127.0.0.1", 9000)
 server.load_configurations()
 server.prepare()
 server.load_bundles()
-models = server.models
-Model.data_connector.record_models(models)
 server.run()
 Model.data_connector.loop()

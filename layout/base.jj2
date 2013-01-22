@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <title>PA-POC2 - <% block title %><% endblock %></title>
+    <% block head %><% endblock %>
     <link rel="stylesheet" href="/static/design.css" />
 </head>
 <body>

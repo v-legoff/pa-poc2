@@ -1,0 +1,48 @@
+<% extends "layout/base.jj2" %>
+<% block title %>Chat with 'em<% endblock %>
+    <% block content %>
+        <h1>Chat window</h1>
+        <form action="#" method="GET">
+            <p><span id="instruction">Enter your pseudo</span>:
+            <input type="text" id="pseudo" />
+            <input type="submit" id="setpseudo" value="set" />
+        </p>
+        </form>
+        <div id="chat"></div>
+        <form action="#" method="get">
+            <p><input type="text" name="message" id="message" /></p>
+            <p><input id='send' type='submit' value='Send' /></p>
+        </form>
+    <script type='application/javascript' src='/static/js/jquery-1.6.2.min.js'></script>
+    <script type='application/javascript' src='/static/js/jquery.json-2.4.min.js'></script>
+    <script type='application/javascript' src='/static/js/jquery.websocket-0.0.1.js'></script>
+    <script type='application/javascript'>
+    $(document).ready(function() {
+        var ws = $.websocket("ws://127.0.0.1:9000/ws", {
+            events: {
+                setpseudo: function(e) {
+                    pseudo = e.data.pseudo;
+                    $('#instruction').text('Your current pseudo');
+                    $('#setpseudo').val('Change');
+                },
+                message: function(e) {
+                    message = e.data.message;
+                    $('#chat').html($('#chat').html() + '<br />' + message);
+                }
+            }
+        });
+        $('#setpseudo').click(function() {
+            pseudo = $('#pseudo').val();
+            ws.send("setpseudo", {"function": "connect", "pseudo": pseudo});
+            return false;
+        });
+
+        $('#send').click(function() {
+            pseudo = $('#pseudo').val();
+            ws.send("message", {"message": pseudo + ': ' + $('#message').val()});
+            $('#message').val("");
+            return false;
+        });
+        });
+        </script>
+    <% endblock %>
