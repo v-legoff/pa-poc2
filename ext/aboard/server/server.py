@@ -32,6 +32,7 @@ import hashlib
 import os
 
 import cherrypy
+from cherrypy._cptools import HandlerTool
 import yaml
 
 from ext.aboard.autoloader import AutoLoader
@@ -41,6 +42,7 @@ from ext.aboard.dc import connectors
 from ext.aboard.formatters import formats
 from ext.aboard.formatters.base import Formatter
 from ext.aboard.model import Model
+from ext.aboard.plugin.manager import PluginManager
 from ext.aboard.router.dispatcher import AboardDispatcher
 from ext.aboard.server.plugins.reloader import Reloader
 from ext.aboard.service import Service
@@ -58,6 +60,7 @@ class Server:
         self.loader = AutoLoader(self)
         self.bundles = {}
         self.configurations = {}
+        self.plugin_manager = PluginManager(self)
         self.services = ServiceManager()
         self.services.register_defaults()
         self.templating_system = Jinja2(self)
@@ -99,6 +102,7 @@ class Server:
         
         dc = dc()
         dc.setup(**dc_spec)
+        dc.running = True
         Model.data_connector = dc
         
         if "formats" not in self.configurations:
@@ -128,7 +132,7 @@ class Server:
         path = "bundles"
         for name in os.listdir(path):
             if not name.startswith("__") and os.path.isdir(path + "/" + name):
-                bundle = Bundle(name)
+                bundle = Bundle(self, name)
                 self.bundles[name] = bundle
         
         for bundle in self.bundles.values():
@@ -140,13 +144,24 @@ class Server:
         cherrypy.engine.reloader = Reloader(cherrypy.engine)
         cherrypy.engine.reloader.loader = self.loader
         cherrypy.engine.reloader.subscribe()
-        cherrypy.config.update({'server.socket_port': 9000})
+        cherrypy.config.update({
+                'server.socket_port': 9000,
+        })
+        #handler = HandlerTool(self.dispatcher.handle)
+        cherrypy.config["tools.encode.on"] = True
+        cherrypy.config["tools.decode.on"] = True
         conf = {
             '/': {
-                'request.dispatch': self.dispatcher,
+                #'tools.handler.on': True,
+                #'request.dispatch': self.dispatcher,
             },
         }
-        cherrypy.tree.mount(root=None, config=conf)
+        
+        #cherrypy.tools.handler = handler
+        # Some plugins add configuration
+        self.plugin_manager.call("extend_server_configuration", cherrypy.engine, conf)
+        print("config", conf)
+        cherrypy.tree.mount(root=self.dispatcher, config=conf)
         cherrypy.engine.start()
         cherrypy.engine.block()
     

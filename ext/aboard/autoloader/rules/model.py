@@ -60,6 +60,7 @@ class ModelRule(Rule):
         class_name = name.capitalize()
         mod_class = getattr(module, class_name)
         mod_class.data_connector = self.data_connector
+        self.data_connector.record_model(mod_class)
         
         # Write the class in the bundles
         bundle_name = Rule.bundle_name(module)

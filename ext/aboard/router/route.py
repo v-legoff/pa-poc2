@@ -97,7 +97,7 @@ class Route:
     
     def __repr__(self):
         return "<Route to {} -> {} (methods={})>".format(
-                self.pattern, self.callable, ",".join(self.methods))
+                self.pattern, self.controller, ",".join(self.methods))
     
     def match(self, request, path):
         """Return whether or not thie path is matched by the route."""

@@ -1,4 +1,4 @@
-# Copyright (c) 2012 LE GOFF Vincent
+# Copyright (c) 2013 LE GOFF Vincent
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,33 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Module containing the MetaDatas class, descripbed below."""
+"""Module containing the PluginRule class."""
 
-class MetaDatas:
+from ext.aboard.autoloader.rules.base import Rule
+
+class PluginRule(Rule):
     
-    """Class representing the bundle meta-datas.
+    """Class defining the autoloader rule to import plugins.
     
-    Meta-datas are datas stored in the bundle giving some general
-    informations about the bundle (who wrote it, what is its purposes,
-    what are its eventual requirements...).
+    When imported, a plugin need to be added to the plugin manager
+    and next to be subscribed.
     
     """
     
-    def __init__(self, buundle_name, informations):
-        """Construct the meta-datas.
+    def __init__(self, server):
+        self.server = server
+    
+    def load(self, module):
+        """Load a specific package.
         
-        The informations are given as a dictionary {information_name: values}.
+        This method:
+            Get the Plugin class defined in the module
+            Register this plugin in the plugin manager
+            Subscribe this plugins.
+            Return the class
         
         """
-        informations = informations or {}
-        self.requirements = []
-        self.plugins = informations.get("plugins", [])
+        name = Rule.module_name(module)
+        plg_class = getattr(module, "Plugin")
+        self.server.plugin_manager.register(name, plg_class)
+        return plg_class

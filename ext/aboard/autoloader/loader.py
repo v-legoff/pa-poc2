@@ -139,13 +139,14 @@ class AutoLoader:
         
         """
         if path in self.loaded_modules:
-            module, rule_name = self.loaded_modules[path]
-            rule = self.rules[rule_name]
-            rule.unload(module)
-            n_module = reload(module)
-            ret = rule.load(n_module)
-            self.loaded_modules[path] = (n_module, rule_name)
-            return ret
+            with self.server.dispatcher.req_lock:
+                module, rule_name = self.loaded_modules[path]
+                rule = self.rules[rule_name]
+                rule.unload(module)
+                n_module = reload(module)
+                ret = rule.load(n_module)
+                self.loaded_modules[path] = (n_module, rule_name)
+                return ret
     
     def load_modules(self, rule, pypath):
         """Load a set of modules based on the pypath.

@@ -29,20 +29,21 @@
 """This module contains the AboardDispatcher class, defined below."""
 
 import os
+from threading import RLock
 
 import cherrypy
-Dispatcher = cherrypy.dispatch.Dispatcher
 
 from ext.aboard.router.route import Route
 from ext.aboard.router.static import StaticRoute
 
 class AboardDispatcher:
     
-    """Cherrypy dispatcher for Python Aboard.
+    """Dispatcher for Python Aboard.
     
-    The dispatcher contains the routing process.  The routes, defined
-    in the ./route.py file, are added to this dispatcher and are used to
-    redirect an HTTP request to a controller.
+    This class is used as a tool by Cherrypy.  The dispatcher contains
+    the routing process.  The routes, defined in the ./route.py file,
+    are added to this dispatcher and are used to redirect an HTTP
+    request to a controller.
     
     The controllers are callables (usually instance methods) that are
     configured for a matching URI.
@@ -68,44 +69,39 @@ class AboardDispatcher:
         not used here.
         
         """
-        Dispatcher.__init__(self, translate={})
         self.routes = {}
+        self.req_lock = RLock()
         self.add_static_route("static", "/static", os.getcwd() + "/static")
     
-    def __call__(self, path):
-        """Look for a matching route to 'path'."""
-        if path.endswith("/"):
-            path = path[:-1]
-        
-        return Dispatcher.__call__(self, path)
-    
-    def find_handler(self, path):
+    @cherrypy.expose
+    def default(self, *args, **kwargs):
         """Return the appropriate page handler, plus any virtual path."""
-        request = cherrypy.serving.request
-        request.config = {
-                "tools.encode.on": True,
-        }
-        request.is_index = False
-        
-        # Get the path without taking in account the format
-        format = path.split(".")[-1].lower()
-        if len(format) < len(path):
-            without_format = path[:-(len(format) + 1)]
-        else:
-            format = ""
-            without_format = path
-        
-        for route in self.routes.values():
-            if route.format_dependent:
-                to_test = path
-            else:
-                to_test = without_format
+        with self.req_lock:
+            request = cherrypy.request
+            path = "/" + "/".join(args)
             
-            match = route.match(request, to_test)
-            if not isinstance(match, bool):
-                return route.callable, match
-        
-        return None, []
+            if path.endswith("/"):
+                path = path[:-1]
+            
+            # Get the path without taking in account the format
+            format = path.split(".")[-1].lower()
+            if len(format) < len(path):
+                without_format = path[:-(len(format) + 1)]
+            else:
+                format = ""
+                without_format = path
+            
+            for route in self.routes.values():
+                if route.format_dependent:
+                    to_test = path
+                else:
+                    to_test = without_format
+                
+                match = route.match(request, to_test)
+                if not isinstance(match, bool):
+                    return route.callable(*match, **kwargs)
+            
+        raise cherrypy.NotFound()
     
     def add_route(self, name, pattern, controller, callable,
             methods=None):

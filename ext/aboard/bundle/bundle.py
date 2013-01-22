@@ -55,8 +55,9 @@ class Bundle:
     
     """
     
-    def __init__(self, name):
+    def __init__(self, server, name):
         """Create a new bundle."""
+        self.server = server
         self.name = name
         self.meta_data = None
         self.controllers = {}
@@ -93,6 +94,10 @@ class Bundle:
                         self.name, requirement))
                 return False
         
+        print(self.name, self.meta_datas.plugins)
+        for plugin_name in self.meta_datas.plugins:
+            self.server.plugin_manager.load_plugin(loader, plugin_name)
+        
         # Load the bundle's configuration
         self.config = Config(self.name)
         cfg_setup = self.config.setup(server)
@@ -108,7 +113,7 @@ class Bundle:
     
     def read_meta_datas(self):
         """Read the meta datas."""
-        path = "bundles/" + self.name + "/meta_datas.yml"
+        path = "bundles/" + self.name + "/bundle.yml"
         if not os.path.exists(path):
             raise ValueError("the meta-datas of the {} bundle can't " \
                     "be found in {}".format(self.name, path))

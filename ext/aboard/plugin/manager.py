@@ -28,6 +28,8 @@
 
 """Module containing the PluginManager class."""
 
+import os
+
 class PluginManager:
     
     """Class containing the plugin's manager.
@@ -40,10 +42,11 @@ class PluginManager:
     
     """
     
-    def __init__(self):
+    def __init__(self, server):
+        self.server = server
         self.plugins = {}
         self.subscribers = {
-            "extend_configuration": [],
+            "extend_server_configuration": [],
         }
     
     def __getattr__(self, name):
@@ -76,3 +79,11 @@ class PluginManager:
         for plugin in subscribed:
             method = getattr(plugin, event)
             method(*args, **kwargs)
+    
+    def load_plugin(self, loader, name):
+        """Load a plugin."""
+        pypath = "plugins." + name
+        fspath = os.path.join("plugins", name)
+        print("Try to load", name, pypath, fspath)
+        if os.path.exists(fspath) and os.path.isdir(fspath):
+            loader.load_module("plugin", pypath)
