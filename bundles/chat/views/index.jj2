@@ -8,6 +8,7 @@
             <input type="submit" id="setpseudo" value="set" />
         </p>
         </form>
+        <p id="chat_error"></p>
         <div id="chat"></div>
         <form action="#" method="get">
             <p><input type="text" name="message" id="message" /></p>
@@ -20,26 +21,34 @@
     $(document).ready(function() {
         var ws = $.websocket("ws://127.0.0.1:9000/ws", {
             events: {
-                setpseudo: function(e) {
-                    pseudo = e.data.pseudo;
-                    $('#instruction').text('Your current pseudo');
-                    $('#setpseudo').val('Change');
+                error: function(e) {
+                    message = e.data.message;
+                    $('#chat_error').text(message);
                 },
                 message: function(e) {
                     message = e.data.message;
                     $('#chat').html($('#chat').html() + '<br />' + message);
+                },
+                setpseudo: function(e) {
+                    pseudo = e.data.pseudo;
+                    newpseudo = e.data.newpseudo;
+                    if(newpseudo)
+                    {
+                        $('#instruction').text('Your current pseudo');
+                        $('#setpseudo').val('Change');
+                    }
+                    $('#chat_error').text("");
                 }
             }
         });
         $('#setpseudo').click(function() {
             pseudo = $('#pseudo').val();
-            ws.send("setpseudo", {"function": "connect", "pseudo": pseudo});
+            ws.send("setpseudo", {"pseudo": pseudo});
             return false;
         });
 
         $('#send').click(function() {
-            pseudo = $('#pseudo').val();
-            ws.send("message", {"message": pseudo + ': ' + $('#message').val()});
+            ws.send("message", {"message": $('#message').val()});
             $('#message').val("");
             return false;
         });
