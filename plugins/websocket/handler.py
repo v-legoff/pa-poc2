@@ -49,8 +49,9 @@ class WebSocketHandler(WebSocket):
         if self in self.handlers:
             self.handlers.remove(self)
     
-    def received_message(self, m):
-        msg = m.data.decode("utf-8")
+    def received_message(self, message):
+        """Receive a message."""
+        msg = message.data.decode("utf-8")
         
         # The data should be in JSON format
         try:
@@ -84,10 +85,51 @@ class WebSocketHandler(WebSocket):
         function_name = "handle_" + key
         function = getattr(self, function_name)
         function(**args)
-        print("send", key, args)
     
-    @staticmethod
-    def validate_schema(schema, args):
+    @classmethod
+    def validate_schema(cls, schema, args):
+        """Return whether the specified schema is valid or not.
+        
+        A schema is a collection.  The schema and the argument
+        should be of the same type.
+        
+        For instance, here are some datas:
+            {
+                "name": "vincent",
+                "height": 5
+            }
+        
+        And here is a corresponding schema:
+            {
+                "name": "str",
+                "height": int
+            }
+        
+        """
+        print("compare", schema, args)
+        if not isinstance(schema, type(args)):
+            return False
+        
+        if isinstance(schema, dict):
+            keys = tuple(schema.keys())
+        elif isinstance(schema, list):
+            keys = tuple(range(len(schema)))
+        
+        for key in keys:
+            try:
+                value = args[key]
+            except (IndexError, KeyError):
+                return False
+            
+            sc_type = schema[key]
+            print("Cmp", value, sc_type)
+            if isinstance(sc_type, (dict, list)):
+                ret = cls.validate_schema(sc_type, value)
+                if not ret:
+                    return False
+            elif not isinstance(value, sc_type):
+                return False
+        
         return True
     
     def send_text(self, text):

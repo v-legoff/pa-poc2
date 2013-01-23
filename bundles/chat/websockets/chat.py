@@ -12,9 +12,17 @@ class Chat(WebSocketHandler):
     
     pseudos = {}
     functions = {
-        "setpseudo": {"pseudo": "str"},
+        "setpseudo": {"pseudo": str},
         "message": {"message": str},
     }
+    
+    def closed(self, code, reason="A client left without explanation."):
+        """The client closes the connection."""
+        WebSocketHandler.closed(self, code, reason)
+        if self in self.pseudos:
+            pseudo = self.pseudos[self]
+            del self.pseudos[self]
+            self.send_to_connected(pseudo + " left the room.")
     
     def handle_setpseudo(self, pseudo):
         """Change the pseudo."""
@@ -71,7 +79,6 @@ class Chat(WebSocketHandler):
     def can_use_pseudo(self, pseudo):
         """Return whether this client can use this pseudo."""
         pseudos = [p.lower() for p in self.pseudos.values()]
-        print(pseudo, pseudos)
         if pseudo.lower() in pseudos:
             self.send_JSON("error", message="This pseudo is already used.")
             return False
