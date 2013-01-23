@@ -24,7 +24,7 @@ class Plugin(AbsPlugin):
         cp_plugin.subscribe()
         cls.cp_plugin = cp_plugin
         cherrypy.tools.websocket = WebSocketTool()
-        WebSocketHandler.handlers = cp_plugin.pool
+        WebSocketHandler.pool = cp_plugin.pool
         config.update({
             '/ws': {
                 'tools.websocket.on': True,
