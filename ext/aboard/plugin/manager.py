@@ -46,6 +46,8 @@ class PluginManager:
         self.server = server
         self.plugins = {}
         self.subscribers = {
+            "bundle_autoload": [],
+            "extend_autoloader": [],
             "extend_server_configuration": [],
         }
     
@@ -72,14 +74,29 @@ class PluginManager:
         """
         subscribed = self.subscribers[event]
         subscribed.append(plugin)
+        print("subscribe", event, plugin)
         
     def call(self, event, *args, **kwargs):
         """Call the subscribed plugins."""
         subscribed = self.subscribers[event]
+        print("call", event, subscribed)
         for plugin in subscribed:
             method = getattr(plugin, event)
             method(*args, **kwargs)
     
+    def call_for(self, plugin_name, event, *args, **kwargs):
+        """Specifically call a plugin event.
+        
+        Expected parameters:
+            plugin_name -- the name of the plugin
+            event -- the event name
+            *args, **kwargs -- arguments transfered to the event
+        
+        """
+        plugin = self.plugins[plugin_name]
+        method = getattr(plugin, event)
+        method(*args, **kwargs)
+        
     def load_plugin(self, loader, name):
         """Load a plugin."""
         pypath = "plugins." + name

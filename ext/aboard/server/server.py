@@ -144,24 +144,27 @@ class Server:
         cherrypy.engine.reloader = Reloader(cherrypy.engine)
         cherrypy.engine.reloader.loader = self.loader
         cherrypy.engine.reloader.subscribe()
+        abs_path = os.path.abspath(os.path.join(os.path.dirname(
+                __file__), "..", "..", ".."))
+        print("abspath", abs_path)
         cherrypy.config.update({
+                'server.socket_host': '0.0.0.0',
                 'server.socket_port': 9000,
+                'tools.staticdir.root': abs_path,
         })
-        #handler = HandlerTool(self.dispatcher.handle)
         cherrypy.config["tools.encode.on"] = True
         cherrypy.config["tools.decode.on"] = True
-        conf = {
-            '/': {
-                #'tools.handler.on': True,
-                #'request.dispatch': self.dispatcher,
-            },
+        config = {
+            '/static': {
+                'tools.staticdir.on': True,
+                'tools.staticdir.dir': 'static',
+            }
         }
         
-        #cherrypy.tools.handler = handler
         # Some plugins add configuration
-        self.plugin_manager.call("extend_server_configuration", cherrypy.engine, conf)
-        print("config", conf)
-        cherrypy.tree.mount(root=self.dispatcher, config=conf)
+        self.plugin_manager.call("extend_server_configuration", cherrypy.engine, config)
+        print("config", config)
+        cherrypy.tree.mount(root=self.dispatcher, config=config)
         cherrypy.engine.start()
         cherrypy.engine.block()
     

@@ -26,6 +26,4 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Package containing the websocket plugin."""
-
-from plugins.websocket.plugin import Plugin
+"""Package containing the autoloader rules added by the websocket plugin."""

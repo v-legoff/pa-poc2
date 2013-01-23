@@ -94,9 +94,12 @@ class Bundle:
                         self.name, requirement))
                 return False
         
-        print(self.name, self.meta_datas.plugins)
         for plugin_name in self.meta_datas.plugins:
             self.server.plugin_manager.load_plugin(loader, plugin_name)
+            self.server.plugin_manager.call("extend_autoloader",
+                    self.server, loader)
+            self.server.plugin_manager.call_for(plugin_name,
+                    "bundle_autoload", self, loader)
         
         # Load the bundle's configuration
         self.config = Config(self.name)

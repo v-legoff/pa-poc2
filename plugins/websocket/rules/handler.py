@@ -26,6 +26,39 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Package containing the websocket plugin."""
+"""Module containing the WebSocketHandlerRule class."""
 
-from plugins.websocket.plugin import Plugin
+from ext.aboard.autoloader.rules.base import Rule
+
+class WebSocketHandlerRule(Rule):
+    
+    """Class defining the autoloader rule to import web socket handlers.
+    
+    A web socket handler is an object which keeps track of the
+    connected clients and contain several methods called when a client
+    sends a specific request.  The web socket handlers are more
+    detailed in the WebSocketHandler class (contained in the 'handler'
+    module of the 'websocket' package).
+    
+    When a WebSocketHandler is automatically loaded, the class
+    containing the handler is extracted from the module, then
+    returned.
+    
+    """
+    
+    def __init__(self, server):
+        self.server = server
+    
+    def load(self, module):
+        """Load a specific module.
+        
+        This method:
+            Get the WebSocketHandler class defined in the module
+            Return the class
+        
+        """
+        name = Rule.module_name(module)
+        class_name = name.capitalize()
+        wsh_class = getattr(module, class_name)
+        print("Load", wsh_class)
+        return wsh_class

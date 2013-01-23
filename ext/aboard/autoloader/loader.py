@@ -71,6 +71,7 @@ class AutoLoader:
         if name in self.rules:
             raise ValueError("this rule name is already used")
         
+        print("Add_rule", name)
         self.rules[name] = rule
     
     def add_default_rule(self, name, rule):
@@ -160,10 +161,15 @@ class AutoLoader:
         
         """
         fs_path = pypath.replace(".", os.sep)
+        loaded = []
         if os.path.exists(fs_path) and os.path.isdir(fs_path):
             for filename in os.listdir(fs_path):
                 if filename.startswith("_") or not filename.endswith(".py"):
                     continue
                 
                 pyfile = filename[:-3]
-                self.load_module(rule, pypath + "." + pyfile)
+                ret = self.load_module(rule, pypath + "." + pyfile)
+                loaded.append(ret)
+        
+        return loaded
+
