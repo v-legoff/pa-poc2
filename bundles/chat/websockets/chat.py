@@ -16,6 +16,11 @@ class Chat(WebSocketHandler):
         "message": {"message": str},
     }
     
+    def opened(self):
+        """The connection has succeeded."""
+        WebSocketHandler.opened(self)
+        self.update_online()
+    
     def closed(self, code, reason="A client left without explanation."):
         """The client closes the connection."""
         WebSocketHandler.closed(self, code, reason)
@@ -23,6 +28,7 @@ class Chat(WebSocketHandler):
             pseudo = self.pseudos[self]
             del self.pseudos[self]
             self.send_to_connected(pseudo + " left the room.")
+            self.update_online()
     
     def handle_setpseudo(self, pseudo):
         """Change the pseudo."""
@@ -34,6 +40,7 @@ class Chat(WebSocketHandler):
         if self.can_use_pseudo(pseudo):
             self.pseudos[self] = pseudo
             self.send_JSON("setpseudo", pseudo=pseudo, newpseudo=new)
+            self.update_online()
             if new:
                 welcome = pseudo + " entered the room."
                 self.send_message("You are now connected as {}.".format(pseudo))
@@ -52,6 +59,11 @@ class Chat(WebSocketHandler):
         
         message = "<" + pseudo + "> " + message
         self.send_to_connected(message)
+    
+    def update_online(self):
+        """Send to all clients the number of connected clients."""
+        for ws_handler in self.handlers:
+            ws_handler.send_JSON("update_online", nb_online=len(self.pseudos))
     
     def send_to_connected(self, message, *exceptions, escape=True):
         """Send a message to all connected clients.

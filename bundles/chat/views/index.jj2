@@ -2,17 +2,18 @@
 <% block title %>Chat with 'em<% endblock %>
     <% block content %>
         <h1>Chat window</h1>
+        <p><em>Welcome</em> on the Chat Window.<br />
+        They are <span id="nb_online">nobody connected yet</span>.</p>
         <form action="#" method="GET">
             <p><span id="instruction">Enter your pseudo</span>:
             <input type="text" id="pseudo" />
-            <input type="submit" id="setpseudo" value="set" />
+            <input type="submit" id="setpseudo" value="Connect" />
         </p>
         </form>
-        <p id="chat_error"></p>
         <div id="chat"></div>
         <form action="#" method="get">
-            <p><input type="text" name="message" id="message" /></p>
-            <p><input id='send' type='submit' value='Send' /></p>
+            <p id="chat_window"><input type="text" name="message" id="message" />
+            <input id="send" type="submit" value="Send" /></p>
         </form>
     <script type='application/javascript' src='/static/js/jquery-1.6.2.min.js'></script>
     <script type='application/javascript' src='/static/js/jquery.json-2.4.min.js'></script>
@@ -23,7 +24,7 @@
             events: {
                 error: function(e) {
                     message = e.data.message;
-                    $('#chat_error').text(message);
+                    $('#chat').html($('#chat').html() + "<br /><strong>" + message + "</strong>");
                 },
                 message: function(e) {
                     message = e.data.message;
@@ -37,7 +38,22 @@
                         $('#instruction').text('Your current pseudo');
                         $('#setpseudo').val('Change');
                     }
-                    $('#chat_error').text("");
+                },
+                update_online: function(e) {
+                    nb_online = e.data.nb_online;
+                    if (nb_online == 0) 
+                    {
+                        message = "nobody connected yet";
+                    }
+                    else if (nb_online == 1)
+                    {
+                        message = "one people online";
+                    }
+                    else
+                    {
+                        message = nb_online + " people online";
+                    }
+                    $('#nb_online').text(message);
                 }
             }
         });
