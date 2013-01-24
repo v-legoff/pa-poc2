@@ -1,6 +1,0 @@
-<% extends "layout/base.jj2" %>
-<% block title %>Show message <= message.id =><% endblock %>
-    <% block content %>
-        <h1>Pseudo: <= message.pseudo|e =></h1>
-        <p><= message.content|e =></p>
-    <% endblock %>
