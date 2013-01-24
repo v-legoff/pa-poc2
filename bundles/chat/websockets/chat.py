@@ -62,8 +62,11 @@ class Chat(WebSocketHandler):
     
     def update_online(self):
         """Send to all clients the number of connected clients."""
+        pseudos = list(self.pseudos.values())
+        pseudos.sort()
         for ws_handler in self.handlers:
-            ws_handler.send_JSON("update_online", nb_online=len(self.pseudos))
+            ws_handler.send_JSON("update_online", nb_online=len(self.pseudos),
+                    pseudos=pseudos)
     
     def send_to_connected(self, message, *exceptions, escape=True):
         """Send a message to all connected clients.

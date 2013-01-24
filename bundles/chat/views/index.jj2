@@ -3,7 +3,9 @@
     <% block content %>
         <h1>Chat window</h1>
         <p><em>Welcome</em> on the Chat Window.<br />
-        They are <span id="nb_online">nobody connected yet</span>.</p>
+        <span id="nb_online">They are nobody connected yet</span>
+        (<a id="detail_connected" href="">show the list</a>).</p>
+        <div id="connected_list"></div>
         <form action="#" method="GET">
             <p><span id="instruction">Enter your pseudo</span>:
             <input type="text" id="pseudo" />
@@ -20,6 +22,7 @@
     <script type='application/javascript' src='/static/js/jquery.websocket-0.0.1.js'></script>
     <script type='application/javascript'>
     $(document).ready(function() {
+        $('#connected_list').hide()
         var ws = $.websocket("ws://127.0.0.1:9000/ws", {
             events: {
                 error: function(e) {
@@ -41,22 +44,47 @@
                 },
                 update_online: function(e) {
                     nb_online = e.data.nb_online;
+                    pseudos = e.data.pseudos;
                     if (nb_online == 0) 
                     {
-                        message = "nobody connected yet";
+                        message = "There is nobody connected yet";
+                        $('#connected_list').html("");
                     }
                     else if (nb_online == 1)
                     {
-                        message = "one people online";
+                        message = "There is one people online";
+                        $('#connected_list').html('<ul><li>' + pseudos[0] + '</li></ul>');
                     }
                     else
                     {
-                        message = nb_online + " people online";
+                        message = "There are " + nb_online + " people online";
+                        code = "<ul>";
+                        for (i = 0; i < pseudos.length; i++)
+                        {
+                            code += '<li>' + pseudos[i] + '</li>';
+                        }
+                        code += '</ul>';
+                        $('#connected_list').html(code);
                     }
                     $('#nb_online').text(message);
                 }
             }
         });
+        
+        $('#detail_connected').click(function() {
+            if($('#connected_list').is(':visible'))
+            {
+                $('#connected_list').hide();
+                $(this).text('show the list');
+            }
+            else
+            {
+                $('#connected_list').show();
+                $(this).text('hide the list');
+            }
+            return false;
+        });
+        
         $('#setpseudo').click(function() {
             pseudo = $('#pseudo').val();
             ws.send("setpseudo", {"pseudo": pseudo});
