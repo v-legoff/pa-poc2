@@ -60,6 +60,38 @@ class TemplateFunctions:
         
         self.server = server
     
+    def full_URL(self, protocol=None, host=None, port=None, path=None):
+        """Return a given URL 'protocol://host:port/path'.
+        
+        You can specify informations through the named arguments.
+            If the protocol is not specified, it will be 'http'
+            If the host is not specified, it will be the server's host
+            If the port is nos specified, it will be the server's port [1]
+            If the path is not specified, it won't be included.
+        
+        [1] If the protocol is HTTP and the port 80, it is not included.
+        
+        """
+        if protocol is None:
+            protocol = "http"
+        
+        if host is None:
+            host = self.server.hostname
+        
+        if port is None:
+            port = self.server.port
+        
+        if protocol == "http" and port == 80:
+            address = "{protocol}://{host}/"
+        else:
+            address = "{protocol}://{host}:{port}/"
+        
+        address = address.format(protocol=protocol, host=host, port=port)
+        if path:
+            address += path
+        
+        return address
+    
     def link_to(self, route, *parameters, name="here", confirm=None):
         """Return a <a> tag.
         

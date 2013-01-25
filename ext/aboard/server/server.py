@@ -56,6 +56,7 @@ class Server:
     def __init__(self):
         self.host = "127.0.0.1"
         self.port = 9000
+        self.hostname = "localhost"
         self.dispatcher = AboardDispatcher()
         self.loader = AutoLoader(self)
         self.bundles = {}
@@ -97,6 +98,8 @@ class Server:
                 self.host = server["host"]
             if "port" in server:
                 self.port = server["port"]
+            if "hostname" in server:
+                self.hostname = server["hostname"]
         
         # DataConnector configuration
         dc_conf = self.configurations["data_connector"]

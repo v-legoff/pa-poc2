@@ -23,7 +23,7 @@
     <script type='application/javascript'>
     $(document).ready(function() {
         $('#connected_list').hide()
-        var ws = $.websocket("ws://127.0.0.1:9000/ws", {
+        var ws = $.websocket("<= full_URL(protocol="ws", path="ws") =>", {
             events: {
                 error: function(e) {
                     message = e.data.message;
