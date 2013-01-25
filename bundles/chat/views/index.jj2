@@ -1,6 +1,9 @@
 <% extends "layout/base.jj2" %>
 <% block title %>Chat with 'em<% endblock %>
     <% block content %>
+        <audio preload="auto" id="snd_connect">
+            <source src="/static/sounds/connection.wav" type="audio/wave">
+        </audio>
         <h1>Chat window</h1>
         <p><em>Welcome</em> on the Chat Window.<br />
         <span id="nb_online">They are nobody connected yet</span>
@@ -40,6 +43,7 @@
                     {
                         $('#instruction').text('Your current pseudo');
                         $('#setpseudo').val('Change');
+                        $('#snd_connect')[0].play();
                     }
                 },
                 update_online: function(e) {
