@@ -33,7 +33,7 @@ import path
 from ext.aboard.server import Server
 from ext.aboard.model import Model
 
-server = Server("127.0.0.1", 9000)
+server = Server()
 server.load_configurations()
 server.prepare()
 server.load_bundles()
