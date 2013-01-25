@@ -1,0 +1,18 @@
+# Configuration of the server
+
+## Server's host
+# Choose:
+#   127.0.0.1 if you don't want your server to be accessed from the Internet
+#   0.0.0.0 if you want your server to be accessed from Internet
+host: 127.0.0.1
+
+## Server's port
+# On which port should the server listen?
+port: 9000
+
+## Hostname
+# This value should contain the host name used to create links and URL
+# Choose:
+#   localhost if your server is local
+#   your hostname if you have one
+hostname: localhost

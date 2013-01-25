@@ -53,9 +53,10 @@ class Server:
     
     """Wrapper of a cherrypy server."""
     
-    def __init__(self, host, port):
-        self.host = host
-        self.port = port
+    def __init__(self):
+        self.host = "127.0.0.1"
+        self.port = 9000
+        self.hostname = "localhost"
         self.dispatcher = AboardDispatcher()
         self.loader = AutoLoader(self)
         self.bundles = {}
@@ -90,6 +91,17 @@ class Server:
     
     def prepare(self):
         """Prepare the server."""
+        # Update the server's host and port
+        if "server" in self.configurations:
+            server = self.configurations["server"]
+            if "host" in server:
+                self.host = server["host"]
+            if "port" in server:
+                self.port = server["port"]
+            if "hostname" in server:
+                self.hostname = server["hostname"]
+        
+        # DataConnector configuration
         dc_conf = self.configurations["data_connector"]
         dc_name = dc_conf["dc_name"]
         dc_spec = dict(dc_conf)
@@ -148,8 +160,8 @@ class Server:
                 __file__), "..", "..", ".."))
         print("abspath", abs_path)
         cherrypy.config.update({
-                'server.socket_host': '0.0.0.0',
-                'server.socket_port': 9000,
+                'server.socket_host': self.host,
+                'server.socket_port': self.port,
                 'tools.staticdir.root': abs_path,
         })
         cherrypy.config["tools.encode.on"] = True
