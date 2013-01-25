@@ -36,22 +36,110 @@ from ws4py.messaging import TextMessage
 
 class WebSocketHandler(WebSocket):
     
+    """Abstract class containing a websocket handler.
+    
+    A handler is a websocket entry point.  It defines a special route
+    on the server where a Websocket server could be reached (for
+    instance, http://myhostname.ext/ws).  It also provides a way to
+    define functions that could be called by the client.  Usually,
+    the client should take care of the displaying process whereas the
+    server should take care of everything else (identification,
+    authentication, validation...).
+    
+    If you want to create a Instant Messaging chat system using
+    websocket, for instance, the client should only:
+        Display the messages it receives from the server
+        Send the server some messages back when needed.
+    
+    The client should send JSON messages to the server containing:
+        type -- the functions's name that should be called
+        data -- the data types.
+    
+    Here is an example of message that a client could send:
+        {
+            "type": "say",
+            "datas": {
+                "message": "Do you hear me?"
+            }
+        }
+    
+    If the message is properly decoded, the server will call a
+    function with the named parameters 'message="Do your hear me?"'.
+        
+    To set a method as "a function that the client could call", you
+    must register it in the 'functions' class attribute.  This is
+    a dictionary, containing the functions's name as key and the
+    expected informations as value.
+    
+    Here's en example:
+        class Chat(WebSocketHandler):
+            
+            functions = {
+                "say": {"message": str},
+            }
+            
+            # ...
+            def handle_say(self, message):
+                "Function called when the 'say' message is sent."
+    
+    When the JSON message (see above) is sent, the function is called:
+        handler.handle_say("Do you hear me?")
+    
+    In the 'functions' dictionary, the value should be a dictionary
+    containing, as keys, the expected informations (message in the
+    example) and as values the corresponding type of expected
+    data.  If the server requested a str but the client sends an
+    int, the request will be dropped.
+    
+    Class attributes:
+        handlers -- the list of handlers (one handler byu connected client)
+        ws_point -- the name of the URL where the handler should listen
+    
+    Methods defined in this class:
+        send_JSON -- send a JSON message to the connected handler
+        opened -- the handler (client) is now connected
+        closed -- the connected handler (client) has disconnected
+    
+    """
+        
     handlers = []
+    ws_point = ""
     functions = ()
     
     def opened(self):
-        """The connection has succeeded."""
+        """Method called when the handler's connection has succeeded.
+        
+        This method adds the newly connected handler to the list of
+        handlers (WebSocketHandler.handlers).  It can be redefined in
+        a subclass to perform other operations, but remember to call
+        the parent method in the redefinition.
+        
+        """
         self.handlers.append(self)
     
     def closed(self, code, reason="A client left the room without a proper explanation."):
-        """The connection had been closed by the client."""
-        print("quit", code, reason)
+        """The connection had been closed.
+        
+        This method removes the connected handlers from the list of connected handlers (WebSocketHandler.handlers).  You can redefine it in a subclass, but remember to call the parent method in the redefinition.
+        
+        """
         if self in self.handlers:
             self.handlers.remove(self)
     
     def received_message(self, message):
-        """Receive a message."""
-        msg = message.data.decode("utf-8")
+        """Receive a message.
+        
+        This method expects a message in the JSON format.  It is
+        responsible for reading the message, decoding, finding the
+        proper function called by the message, check that the expected
+        datas are of the good type and call the function with the
+        specified arguments.
+        
+        """
+        try:
+            msg = message.data.decode("utf-8")
+        except UnicodeError:
+            return
         
         # The data should be in JSON format
         try:
@@ -70,8 +158,8 @@ class WebSocketHandler(WebSocket):
         if not isinstance(key, str) or not isinstance(args, dict):
             return
         
-        # Now we know what name is the function to dcall
-        # We try to find it in the handlers
+        # Now we know what name is the function to call
+        # We try to find it in the functions
         if key not in self.functions:
             return
         
@@ -101,12 +189,11 @@ class WebSocketHandler(WebSocket):
         
         And here is a corresponding schema:
             {
-                "name": "str",
+                "name": str,
                 "height": int
             }
         
         """
-        print("compare", schema, args)
         if not isinstance(schema, type(args)):
             return False
         
@@ -122,7 +209,6 @@ class WebSocketHandler(WebSocket):
                 return False
             
             sc_type = schema[key]
-            print("Cmp", value, sc_type)
             if isinstance(sc_type, (dict, list)):
                 ret = cls.validate_schema(sc_type, value)
                 if not ret:
@@ -136,14 +222,15 @@ class WebSocketHandler(WebSocket):
         """Send a message to the websocket.
         
         This method is a wrapper for the 'send' method.
+        It shouldn't be calle directly, though.  Prefer the
+        'send_JSON' method.
         
         """
-        print("Send out", text)
         msg = TextMessage(text)
         self.send(msg)
     
     def send_JSON(self, function_name, **kwargs):
-        """Send the JSON corresopnding to the function call."""
+        """Send the JSON corresponding to the function call."""
         datas = {
             "type": function_name,
             "data": kwargs,

@@ -60,5 +60,10 @@ class WebSocketHandlerRule(Rule):
         name = Rule.module_name(module)
         class_name = name.capitalize()
         wsh_class = getattr(module, class_name)
-        print("Load", wsh_class)
+        
+        wsh_class.handlers = []
+        if not wsh_class.ws_point:
+            raise ValueError("the 'ws_point' class attribute is not " \
+                    "set in {}".format(wsh_class))
+        
         return wsh_class

@@ -10,6 +10,7 @@ class Chat(WebSocketHandler):
     
     """Class containing the Chat web socket handler."""
     
+    ws_point = "/ws"
     pseudos = {}
     functions = {
         "setpseudo": {"pseudo": str},

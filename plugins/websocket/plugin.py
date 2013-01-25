@@ -26,17 +26,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Module containing the Plugin class."""
+"""Module containing the websocket Plugin class."""
 
 import cherrypy
 
+from plugins.websocket.interface import Interface
 from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
 
-from ext.aboard.plugin import Plugin as AbsPlugin
 from plugins.websocket.handler import WebSocketHandler
 from plugins.websocket.rules.handler import WebSocketHandlerRule
 
-class Plugin(AbsPlugin):
+class Plugin(Interface):
     
     """Class containing the websocket plugin.
     
@@ -55,7 +55,7 @@ class Plugin(AbsPlugin):
     
     @classmethod
     def extend_autoloader(cls, self, autoloader):
-        """Add a 'handler' rule to the autoloaders."""
+        """Add a 'ws_handler' rule to the autoloaders."""
         autoloader.add_rule("ws_handler", WebSocketHandlerRule(self))
     
     @classmethod
@@ -71,12 +71,10 @@ class Plugin(AbsPlugin):
         """Extend the server configuration."""
         cp_plugin = WebSocketPlugin(engine)
         cp_plugin.subscribe()
-        cls.cp_plugin = cp_plugin
         cherrypy.tools.websocket = WebSocketTool()
-        WebSocketHandler.pool = cp_plugin.pool
         for handler in cls.handlers:
             config.update({
-                '/ws': {
+                handler.ws_point: {
                     'tools.websocket.on': True,
                     'tools.websocket.handler_cls': handler,
                 },
