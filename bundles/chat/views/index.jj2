@@ -2,7 +2,7 @@
 <% block title %>Chat with 'em<% endblock %>
     <% block content %>
         <audio preload="auto" id="snd_connect">
-            <source src="/static/sounds/connection.wav" type="audio/wave">
+            <source src="/static/sounds/connection.wav" type="audio/wav">
         </audio>
         <h1>Chat window</h1>
         <p><em>Welcome</em> on the Chat Window.<br />
@@ -16,6 +16,7 @@
         </p>
         </form>
         <div id="chat"></div>
+        <div id="last_message" aria-live="assertive"></div>
         <form action="#" method="get">
             <p id="chat_window"><input type="text" name="message" id="message" />
             <input id="send" type="submit" value="Send" /></p>
@@ -30,11 +31,13 @@
             events: {
                 error: function(e) {
                     message = e.data.message;
-                    $('#chat').html($('#chat').html() + "<br /><strong>" + message + "</strong>");
+                    $('#chat').html($('#chat').html() + "<br />" + $('#last_message').html());
+                    $('#last_message').html("<strong>" + message + "</strong>");
                 },
                 message: function(e) {
                     message = e.data.message;
-                    $('#chat').html($('#chat').html() + '<br />' + message);
+                    $('#chat').html($('#chat').html() + "<br />" + $('#last_message').html());
+                    $('#last_message').html(message);
                 },
                 setpseudo: function(e) {
                     pseudo = e.data.pseudo;
