@@ -1,8 +1,13 @@
 <% extends "layout/base.jj2" %>
 <% block title %>Chat with 'em<% endblock %>
     <% block content %>
+        <audio preload="auto" id="snd_message">
+            <source src="/static/sounds/message.ogg" type="audio/ogg">
+            <source src="/static/sounds/message.mp3" type="audio/mp3">
+        </audio>
         <audio preload="auto" id="snd_connect">
-            <source src="/static/sounds/connection.wav" type="audio/wav">
+            <source src="/static/sounds/chime.ogg" type="audio/ogg">
+            <source src="/static/sounds/chime.mp3" type="audio/mp3">
         </audio>
         <h1>Chat window</h1>
         <p><em>Welcome</em> on the Chat Window.<br />
@@ -21,7 +26,7 @@
             <p id="chat_window"><input type="text" name="message" id="message" />
             <input id="send" type="submit" value="Send" /></p>
         </form>
-    <script type='application/javascript' src='/static/js/jquery-1.6.2.min.js'></script>
+    <script type='application/javascript' src='/static/js/jquery-1.9.0.min.js'></script>
     <script type='application/javascript' src='/static/js/jquery.json-2.4.min.js'></script>
     <script type='application/javascript' src='/static/js/jquery.websocket-0.0.1.js'></script>
     <script type='application/javascript'>
@@ -38,6 +43,7 @@
                     message = e.data.message;
                     $('#chat').html($('#chat').html() + "<br />" + $('#last_message').html());
                     $('#last_message').html(message);
+                    $('#snd_message')[0].play();
                 },
                 setpseudo: function(e) {
                     pseudo = e.data.pseudo;

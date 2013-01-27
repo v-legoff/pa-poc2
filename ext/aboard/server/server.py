@@ -170,6 +170,9 @@ class Server:
             '/static': {
                 'tools.staticdir.on': True,
                 'tools.staticdir.dir': 'static',
+                'tools.staticdir.content_types': {
+                        'ogg': 'application/ogg',
+                }
             }
         }
         

@@ -71,7 +71,7 @@ class AboardDispatcher:
         """
         self.routes = {}
         self.req_lock = RLock()
-        self.add_static_route("static", "/static", os.getcwd() + "/static")
+        #self.add_static_route("static", "/static", os.getcwd() + "/static")
     
     @cherrypy.expose
     def default(self, *args, **kwargs):
