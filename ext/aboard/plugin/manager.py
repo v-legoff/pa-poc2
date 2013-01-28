@@ -74,12 +74,10 @@ class PluginManager:
         """
         subscribed = self.subscribers[event]
         subscribed.append(plugin)
-        print("subscribe", event, plugin)
         
     def call(self, event, *args, **kwargs):
         """Call the subscribed plugins."""
         subscribed = self.subscribers[event]
-        print("call", event, subscribed)
         for plugin in subscribed:
             method = getattr(plugin, event)
             method(*args, **kwargs)
@@ -101,6 +99,5 @@ class PluginManager:
         """Load a plugin."""
         pypath = "plugins." + name
         fspath = os.path.join("plugins", name)
-        print("Try to load", name, pypath, fspath)
         if os.path.exists(fspath) and os.path.isdir(fspath):
             loader.load_module("plugin", pypath)

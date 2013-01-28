@@ -71,7 +71,6 @@ class AutoLoader:
         if name in self.rules:
             raise ValueError("this rule name is already used")
         
-        print("Add_rule", name)
         self.rules[name] = rule
     
     def add_default_rule(self, name, rule):

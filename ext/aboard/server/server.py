@@ -158,7 +158,6 @@ class Server:
         cherrypy.engine.reloader.subscribe()
         abs_path = os.path.abspath(os.path.join(os.path.dirname(
                 __file__), "..", "..", ".."))
-        print("abspath", abs_path)
         cherrypy.config.update({
                 'server.socket_host': self.host,
                 'server.socket_port': self.port,
@@ -178,7 +177,6 @@ class Server:
         
         # Some plugins add configuration
         self.plugin_manager.call("extend_server_configuration", cherrypy.engine, config)
-        print("config", config)
         cherrypy.tree.mount(root=self.dispatcher, config=config)
         cherrypy.engine.start()
         cherrypy.engine.block()
